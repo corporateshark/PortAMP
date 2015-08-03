@@ -4,6 +4,11 @@
 
 #if defined(__APPLE__)
 #	include <sys/select.h>
+#	include <sys/time.h>
+#	include <sys/types.h>
+#	include <sys/select.h>
+#	include <unistd.h>
+#	include <termios.h>
 #else
 #	include <conio.h>
 #endif
@@ -35,11 +40,20 @@ bool IsKeyPressed()
 #if defined(_WIN32)
 	return _kbhit();
 #elif defined(__APPLE__)
-	struct timeval tv = { 0L, 0L };
+	struct termios ttystate;
+ 	tcgetattr( STDIN_FILENO, &ttystate );
+	ttystate.c_lflag &= ~ICANON;
+	ttystate.c_cc[VMIN] = 1;
+	tcsetattr( STDIN_FILENO, TCSANOW, &ttystate );
+
 	fd_set fds;
 	FD_ZERO( &fds );
-	FD_SET( 0, &fds );
-	return select( 1, &fds, nullptr, nullptr, &tv );
+	FD_SET( STDIN_FILENO, &fds );
+	struct timeval tv = { 0L, 0L };
+	(void)select( STDIN_FILENO + 1, &fds, nullptr, nullptr, &tv );
+	bool HasKey = FD_ISSET( STDIN_FILENO, &fds );
+	if ( HasKey ) fgetc( stdin );
+	return HasKey;
 #else
 	return kbhit();
 #endif
