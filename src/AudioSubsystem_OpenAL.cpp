@@ -108,4 +108,5 @@ std::shared_ptr<iAudioSource> clAudioSubsystem_OpenAL::CreateAudioSource()
 
 void clAudioSubsystem_OpenAL::SetListenerGain( float Gain )
 {
+	alListenerf( AL_GAIN, Gain );
 }
