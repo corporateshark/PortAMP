@@ -16,6 +16,8 @@ public:
 class iAudioSubsystem
 {
 public:
+	virtual ~iAudioSubsystem() {};
+
 	virtual void Start() = 0;
 	virtual void Stop() = 0;
 
