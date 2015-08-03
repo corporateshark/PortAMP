@@ -4,6 +4,9 @@
 	Based on https://github.com/corporateshark/Android-NDK-Game-Development-Cookbook/tree/master/Chapter5
 **/
 
+#include <atomic>
+#include <thread>
+
 #include "AudioSubsystem_OpenAL.h"
 #include "OpenAL/LAL.h"
 
@@ -31,6 +34,10 @@ private:
 private:
 	ALCdevice*  m_Device;
 	ALCcontext* m_Context;
+
+	std::shared_ptr<std::thread> m_AudioThread;
+	std::atomic<bool> m_IsPendingExit;
+	std::atomic<bool> m_IsInitialized;
 };
 
 std::shared_ptr<iAudioSubsystem> CreateAudioSubsystem_OpenAL()
@@ -39,6 +46,11 @@ std::shared_ptr<iAudioSubsystem> CreateAudioSubsystem_OpenAL()
 }
 
 clAudioSubsystem_OpenAL::clAudioSubsystem_OpenAL()
+: m_Device( nullptr )
+, m_Context( nullptr )
+, m_AudioThread()
+, m_IsPendingExit( false )
+, m_IsInitialized( false )
 {
 	LoadAL();
 }
@@ -58,17 +70,35 @@ void clAudioSubsystem_OpenAL::DebugPrintVersion()
 
 void clAudioSubsystem_OpenAL::Start()
 {
-	m_Device = alcOpenDevice( nullptr );
-	m_Context = alcCreateContext( m_Device, nullptr );
-	alcMakeContextCurrent( m_Context );
+	m_AudioThread = std::make_shared<std::thread>(
+		[this]()
+		{
+			m_Device = alcOpenDevice( nullptr );
+			m_Context = alcCreateContext( m_Device, nullptr );
+			alcMakeContextCurrent( m_Context );
 
-	DebugPrintVersion();
+			DebugPrintVersion();
+
+			m_IsInitialized = true;
+
+			while ( !m_IsPendingExit )
+			{
+			}
+
+			alcDestroyContext( m_Context );
+			alcCloseDevice( m_Device );
+
+			m_IsInitialized = false;
+
+		}
+	);
 }
 
 void clAudioSubsystem_OpenAL::Stop()
 {
-	alcDestroyContext( m_Context );
-	alcCloseDevice( m_Device );
+	m_IsPendingExit = true;
+
+	m_AudioThread->join();
 }
 
 std::shared_ptr<iAudioSource> clAudioSubsystem_OpenAL::CreateAudioSource()
