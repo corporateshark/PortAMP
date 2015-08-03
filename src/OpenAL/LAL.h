@@ -9,7 +9,7 @@
 
 #undef AL_STATIC_LINK
 
-#if defined(ANDROID)
+#if !defined(_WIN32)
 #  define AL_STATIC_LINK
 #else
 #  define AL_NO_PROTOTYPES
