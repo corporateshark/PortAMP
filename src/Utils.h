@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 #include <stdint.h>
 
@@ -18,3 +19,6 @@ public:
 private:
 	std::vector<uint8_t> m_Data;
 };
+
+
+std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName );

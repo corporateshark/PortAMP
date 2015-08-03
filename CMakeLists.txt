@@ -12,6 +12,7 @@ set(SRC_FILES
 	src/AudioSubsystem_OpenAL.cpp
 	src/Decoders/WAV/WAVDataProvider.cpp
 	src/OpenAL/LAL.cpp
+	src/Utils.cpp
 )
 
 set(HEADER_FILES

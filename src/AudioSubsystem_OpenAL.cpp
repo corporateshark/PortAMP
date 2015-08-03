@@ -64,7 +64,7 @@ void clAudioSource_OpenAL::BindDataProvider( const std::shared_ptr<iWaveDataProv
 {
 	m_DataProvider = Provider;
 
-	if ( m_DataProvider ) return;
+	if ( !m_DataProvider ) return;
 
 	if ( m_BuffersCount )
 	{
@@ -198,6 +198,9 @@ void clAudioSubsystem_OpenAL::Start()
 
 		}
 	);
+
+	// wait
+	while ( !m_IsInitialized );
 }
 
 void clAudioSubsystem_OpenAL::Stop()
