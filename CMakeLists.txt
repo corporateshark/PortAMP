@@ -10,6 +10,7 @@ include_directories(
 set(SRC_FILES
 	src/main.cpp
 	src/AudioSubsystem_OpenAL.cpp
+	src/Decoders/WAV/WAVDataProvider.cpp
 	src/OpenAL/LAL.cpp
 )
 
@@ -17,7 +18,9 @@ set(HEADER_FILES
 	src/AudioSubsystem.h
 	src/AudioSubsystem_OpenAL.h
 	src/Decoders/iWaveDataProvider.h
+	src/Decoders/WAV/WAVDataProvider.h
 	src/OpenAL/LAL.h
+	src/Utils.h
 )
 
 add_executable(PortAMP

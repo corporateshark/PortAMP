@@ -24,7 +24,7 @@ public:
 class iWaveDataProvider
 {
 public:
-	virtual ~iWaveDataProvider();
+	virtual ~iWaveDataProvider() {};
 
 	virtual const sWaveDataFormat& GetWaveDataFormat() const = 0;
 
