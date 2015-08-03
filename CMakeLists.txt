@@ -11,6 +11,7 @@ set(SRC_FILES
 )
 
 set(HEADER_FILES
+	src/AudioSubsystem.h
 )
 
 add_executable(PortAMP
