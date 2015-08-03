@@ -16,6 +16,7 @@ set(SRC_FILES
 set(HEADER_FILES
 	src/AudioSubsystem.h
 	src/AudioSubsystem_OpenAL.h
+	src/Decoders/iWaveDataProvider.h
 	src/OpenAL/LAL.h
 )
 
