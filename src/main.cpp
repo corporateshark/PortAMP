@@ -1,6 +1,5 @@
 #include <chrono>
 #include <thread>
-#include <conio.h>
 
 #include "AudioSubsystem.h"
 #include "AudioSubsystem_OpenAL.h"
@@ -22,7 +21,7 @@ int main( int argc, char* argv[] )
 	Source->BindDataProvider( Provider );
 	Source->Play();
 
-	while ( Source->IsPlaying() && !_kbhit() );
+	while ( Source->IsPlaying() && !IsKeyPressed() );
 
 	std::this_thread::sleep_for( std::chrono::milliseconds(300) );
 

@@ -31,6 +31,7 @@ add_executable(PortAMP
 
 if(MSVC)
 elseif(APPLE)
+	set(CMAKE_CXX_FLAGS "-std=c++11")
 	include(CMakeLists_Apple.txt)
 	target_link_libraries(PortAMP
 		dl
