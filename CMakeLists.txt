@@ -24,7 +24,7 @@ set(HEADER_FILES
 	src/Utils.h
 )
 
-add_executable(PortAMP
+add_executable(portamp
 	${SRC_FILES}
 	${HEADER_FILES}
 )
@@ -33,14 +33,14 @@ if(MSVC)
 elseif(APPLE)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 	include(CMakeLists_Apple.txt)
-	target_link_libraries(PortAMP
+	target_link_libraries(portamp
 		dl
 		pthread
 	)
 	include_directories(/usr/local/include /opt/local/include)
-	ADD_FRAMEWORK(OpenAL PortAMP)
+	ADD_FRAMEWORK(OpenAL portamp)
 else()
-	target_link_libraries(PortAMP
+	target_link_libraries(portamp
 		pthread
 		dl
 		openal
