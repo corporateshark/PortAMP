@@ -2,6 +2,12 @@
 
 #include "Utils.h"
 
+#if defined(__APPLE__)
+#	include <sys/select.h>
+#else
+#	include <conio.h>
+#endif
+
 std::vector<uint8_t> ReadFileAsVector( const char* FileName )
 {
 	std::ifstream File( FileName, std::ifstream::binary );
@@ -22,4 +28,19 @@ std::vector<uint8_t> ReadFileAsVector( const char* FileName )
 std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName )
 {
 	return std::make_shared<clBlob>( ReadFileAsVector( FileName ) );
+}
+
+bool IsKeyPressed()
+{
+#if defined(_WIN32)
+	return _kbhit();
+#elif defined(__APPLE__)
+	struct timeval tv = { 0L, 0L };
+	fd_set fds;
+	FD_ZERO( &fds );
+	FD_SET( 0, &fds );
+	return select( 1, &fds, nullptr, nullptr, &tv );
+#else
+	return kbhit();
+#endif
 }
