@@ -17,6 +17,7 @@ Features:
 ---------
 
 * WAV (uncompressed PCM, 8 or 16-bit, mono or stereo)
+* MP3 (using the MiniMP3 library http://keyj.emphy.de/minimp3)
 
 =============================
 
