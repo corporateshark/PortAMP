@@ -18,6 +18,34 @@ Features:
 
 * WAV (uncompressed PCM, 8 or 16-bit, mono or stereo)
 
+=============================
+
+UNIX build instructions:
+------------------------
+
+```
+git clone https://github.com/corporateshark/PortAMP
+cd PortAMP
+mkdir build
+cd build
+cmake .. -G "Unix Makefiles"
+make all -j4 -B
+```
+
+Windows build instructions:
+---------------------------
+
+```
+git clone https://github.com/corporateshark/PortAMP
+cd PortAMP
+mkdir build
+cd build
+cmake .. -G "Visual Studio 12 2013"
+start PortAMP.sln
+```
+
+=============================
+
 
 License:
 --------
