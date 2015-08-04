@@ -16,7 +16,7 @@ int main( int argc, char* argv[] )
 	AudioSubsystem->Start();
 
 	auto TestBlob = ReadFileAsBlob( FileName );
-	auto Provider = std::make_shared<clWAVDataProvider>( TestBlob );
+	auto Provider = CreateWaveDataProvider( FileName, TestBlob );
 	auto Source = AudioSubsystem->CreateAudioSource();
 	Source->BindDataProvider( Provider );
 	Source->Play();

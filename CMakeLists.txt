@@ -12,6 +12,7 @@ include_directories(
 set(SRC_FILES
 	src/main.cpp
 	src/AudioSubsystem_OpenAL.cpp
+	src/Decoders/iWaveDataProvider.cpp
 	src/Decoders/WAV/WAVDataProvider.cpp
 	src/Decoders/MP3/MP3DataProvider.cpp
 	src/OpenAL/LAL.cpp
