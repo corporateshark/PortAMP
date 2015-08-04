@@ -1,16 +1,17 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "Decoders/iWaveDataProvider.h"
 
 class clBlob;
 
-/// a Microsoft WAVE decoder
-class clWAVDataProvider: public iWaveDataProvider
+/// MPEG Layer-III decoder
+class clMP3DataProvider: public iWaveDataProvider
 {
 public:
-	explicit clWAVDataProvider( const std::shared_ptr<clBlob>& Data );
+	explicit clMP3DataProvider( const std::shared_ptr<clBlob>& Data );
 
 	virtual const sWaveDataFormat& GetWaveDataFormat() const override { return m_Format; }
 
@@ -22,6 +23,8 @@ public:
 
 private:
 	std::shared_ptr<clBlob> m_Data;
-	size_t m_DataSize;
 	sWaveDataFormat m_Format;
+
+	std::vector<uint8_t> m_DecodingBuffer;
+	size_t m_BufferUsed;
 };

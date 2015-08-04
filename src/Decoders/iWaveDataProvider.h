@@ -6,6 +6,8 @@
 	Based on https://github.com/corporateshark/Android-NDK-Game-Development-Cookbook/tree/master/Chapter5
 **/
 
+#include <stdint.h>
+
 class sWaveDataFormat
 {
 public:
