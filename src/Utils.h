@@ -23,4 +23,4 @@ private:
 
 std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName );
 
-bool IsKeyPressed();
+int IsKeyPressed();

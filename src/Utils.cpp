@@ -35,7 +35,7 @@ std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName )
 	return std::make_shared<clBlob>( ReadFileAsVector( FileName ) );
 }
 
-bool IsKeyPressed()
+int IsKeyPressed()
 {
 #if defined(_WIN32)
 	return _kbhit();
@@ -52,8 +52,7 @@ bool IsKeyPressed()
 	struct timeval tv = { 0L, 0L };
 	(void)select( STDIN_FILENO + 1, &fds, nullptr, nullptr, &tv );
 	bool HasKey = FD_ISSET( STDIN_FILENO, &fds );
-	if ( HasKey ) fgetc( stdin );
-	return HasKey;
+	return HasKey ? fgetc( stdin ) : 0;
 #else
 	return kbhit();
 #endif
