@@ -9,7 +9,7 @@ extern "C"
 clMP3DataProvider::clMP3DataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
 , m_Format()
-, m_DecodingBuffer()
+, m_DecodingBuffer( MP3_MAX_SAMPLES_PER_FRAME * 16 )
 , m_BufferUsed( 0 )
 , m_StreamPos( 0 )
 , m_InitialStreamPos( 0 )
