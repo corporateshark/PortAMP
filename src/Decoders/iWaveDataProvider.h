@@ -7,6 +7,9 @@
 **/
 
 #include <stdint.h>
+#include <memory>
+
+class clBlob;
 
 class sWaveDataFormat
 {
@@ -38,3 +41,5 @@ public:
 	virtual void Seek( float Seconds ) {}
 	virtual size_t StreamWaveData( size_t Size ) { return 0; }
 };
+
+std::shared_ptr<iWaveDataProvider> CreateWaveDataProvider( const char* FileName, const std::shared_ptr<clBlob> Data );
