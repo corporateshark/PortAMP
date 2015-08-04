@@ -12,6 +12,8 @@ const char* GetFileExt( const char* FileName )
 
 #if defined(_MSC_VER)
 #	define strcmpi _strcmpi
+#else
+#	define strcmpi strcasecmp
 #endif
 
 std::shared_ptr<iWaveDataProvider> CreateWaveDataProvider( const char* FileName, const std::shared_ptr<clBlob> Data )
