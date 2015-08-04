@@ -17,6 +17,7 @@ class clMP3DataProvider: public iWaveDataProvider
 {
 public:
 	explicit clMP3DataProvider( const std::shared_ptr<clBlob>& Data );
+	virtual ~clMP3DataProvider();
 
 	virtual const sWaveDataFormat& GetWaveDataFormat() const override { return m_Format; }
 
@@ -27,6 +28,7 @@ public:
 	virtual void Seek( float Seconds ) override;
 
 private:
+	int DecodeFromFile( size_t BytesRead );
 	void LoadMP3Info();
 
 private:
