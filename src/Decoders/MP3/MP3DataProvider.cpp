@@ -108,8 +108,7 @@ size_t clMP3DataProvider::StreamWaveData( size_t Size )
 		}
 		else
 		{
-			m_IsEndOfStream = true;
-			break; // some error
+			// there is no audio data in this frame, just skip it
 		}
 	}									
 
