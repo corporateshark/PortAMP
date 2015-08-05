@@ -41,7 +41,9 @@ bool IsModule( const char* Ext )
 		( strcmpi( Ext, "ult" ) == 0 ) ||
 		( strcmpi( Ext, "umx" ) == 0 ) ||
 		( strcmpi( Ext, "mt2" ) == 0 ) ||
-		( strcmpi( Ext, "psm" ) == 0 )
+		( strcmpi( Ext, "psm" ) == 0 ) ||
+		// MIDI
+		( strcmpi( Ext, "mid" ) == 0 )
 		// compressed modules
 /*		||
 		( strcmpi( Ext, "mdz" ) == 0 ) ||

@@ -13,7 +13,7 @@ static void LoadModPlug()
 	ModPlug_GetSettings( &Settings );
 
 	// all "basic settings" are set before ModPlug_Load
-	Settings.mResamplingMode = MODPLUG_RESAMPLE_SPLINE;
+	Settings.mResamplingMode = MODPLUG_RESAMPLE_FIR;
 	Settings.mChannels = 2;
 	Settings.mBits = 16;
 	Settings.mFrequency = 44100;
