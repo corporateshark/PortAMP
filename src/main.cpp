@@ -7,14 +7,7 @@
 #include "Decoders/WAV/WAVDataProvider.h"
 #include "Utils.h"
 
-struct sConfig
-{
-	sConfig()
-	: m_Loop( false )
-	{}
-
-	bool m_Loop;
-};
+sConfig g_Config;
 
 sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 {
@@ -23,6 +16,7 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 	for ( int i = 1; i < argc; i++ )
 	{
 		if ( strstr( argv[i], "--loop" ) == argv[i] ) Cfg.m_Loop = true;
+		if ( strstr( argv[i], "--wav-modplug" ) == argv[i] ) Cfg.m_UseModPlugToDecodeWAV = true;
 	}
 
 	return Cfg;
@@ -30,7 +24,7 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 
 int main( int argc, char* argv[] )
 {
-	sConfig Config = ReadConfigFromCommandLine( argc, argv );
+	g_Config = ReadConfigFromCommandLine( argc, argv );
 
 	const char* FileName = ( argc > 1 ) ? argv[1] : "test.ogg";
 
@@ -42,7 +36,7 @@ int main( int argc, char* argv[] )
 	auto Provider = CreateWaveDataProvider( FileName, TestBlob );
 	auto Source = AudioSubsystem->CreateAudioSource();
 	Source->BindDataProvider( Provider );
-	Source->SetLooping( Config.m_Loop );
+	Source->SetLooping( g_Config.m_Loop );
 	Source->Play();
 
 	while ( Source->IsPlaying() && !IsKeyPressed() )

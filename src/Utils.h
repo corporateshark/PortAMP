@@ -20,6 +20,16 @@ private:
 	std::vector<uint8_t> m_Data;
 };
 
+struct sConfig
+{
+	sConfig()
+	: m_Loop( false )
+	, m_UseModPlugToDecodeWAV( false )
+	{}
+
+	bool m_Loop;
+	bool m_UseModPlugToDecodeWAV;
+};
 
 std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName );
 

@@ -4,6 +4,7 @@
 #include "MP3/MP3DataProvider.h"
 #include "OGG/OGGDataProvider.h"
 #include "ModPlug/ModPlugDataProvider.h"
+#include "Utils.h"
 
 const char* GetFileExt( const char* FileName )
 {
@@ -59,10 +60,10 @@ bool IsModule( const char* Ext )
 		( strcmpi( Ext, "xmgz" ) == 0 ) ||
 		( strcmpi( Ext, "itgz" ) == 0 )
 */
-		// WAV
-//		|| ( strcmpi( Ext, "wav" ) == 0 )
 		);
 }
+
+extern sConfig g_Config;
 
 std::shared_ptr<iWaveDataProvider> CreateWaveDataProvider( const char* FileName, const std::shared_ptr<clBlob>& Data )
 {
@@ -77,6 +78,12 @@ std::shared_ptr<iWaveDataProvider> CreateWaveDataProvider( const char* FileName,
 	if ( MP3Blob )
 	{
 		return std::make_shared<clMP3DataProvider>( MP3Blob );
+	}
+
+
+	if ( g_Config.m_UseModPlugToDecodeWAV )
+	{
+		if ( strcmpi( Ext, "wav" ) == 0 ) return std::make_shared<clModPlugDataProvider>( Data );
 	}
 	
 	// default
