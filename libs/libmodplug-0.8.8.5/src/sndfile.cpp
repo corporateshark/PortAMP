@@ -1140,7 +1140,7 @@ UINT CSoundFile::ReadSample(MODINSTRUMENT *pIns, UINT nFlags, LPCSTR lpMemFile, 
 			for (UINT j=0; j<len; j++)
 			{
 				delta += p[j];
-				*pSample++ = (signed char)delta;
+				*pSample++ = (signed char)(delta & 0xFF);
 			}
 		}
 		break;

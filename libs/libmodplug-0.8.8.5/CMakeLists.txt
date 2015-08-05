@@ -28,6 +28,7 @@ endif(APPLE)
 
 set(SRC_FILES
 	src/fastmix.cpp
+	src/load_abc.cpp
 	src/load_669.cpp
 	src/load_amf.cpp
 	src/load_ams.cpp

@@ -2251,11 +2251,19 @@ static void abc_preprocess(ABCHANDLE *h, ABCMACRO *m)
 	if( m->n ) {
 		k = m->n - m->name;
 		for( i=0; i<14; i++ ) {
+#ifdef _MSC_VER
+			char* t = reinterpret_cast<char*>(malloc(strlen(m->name) + 1));
+#else
 			char t[strlen(m->name) + 1];
+#endif
 			strcpy(t, m->name);
 			t[k] = "CDEFGABcdefgab"[i];
 			l = strlen(m->subst);
+#ifdef _MSC_VER
+			char* s = reinterpret_cast<char*>(malloc(2 * l + 1));
+#else
 			char s[2 * l + 1];
+#endif
 			char *p = s;
 			for( j=0; j<l; j++ ) {
 				a = m->subst[j];
@@ -2272,6 +2280,10 @@ static void abc_preprocess(ABCHANDLE *h, ABCMACRO *m)
 			}
 			*p = '\0';
 			abc_substitute(h, t, s);
+#ifdef _MSC_VER
+			free(s);
+			free(t);
+#endif
 		}
 	}
 	else
