@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project("PortAMP")
 
-add_subdirectory(minimp3 EXCLUDE_FROM_ALL)
+add_subdirectory(libs/minimp3 EXCLUDE_FROM_ALL)
 
 include_directories(
 	.
