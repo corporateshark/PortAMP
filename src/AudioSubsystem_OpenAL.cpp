@@ -60,6 +60,7 @@ public:
 	virtual void Play() override;
 	virtual void Stop() override;
 	virtual bool IsPlaying() const override;
+	virtual void SetLooping( bool Looping ) override;
 
 private:
 	void PrepareBuffers();
@@ -293,6 +294,18 @@ bool clAudioSource_OpenAL::IsPlaying() const
 	alGetSourcei( m_SourceID, AL_SOURCE_STATE, &State );
 
 	return State == AL_PLAYING;
+}
+
+void clAudioSource_OpenAL::SetLooping( bool Looping )
+{
+	iAudioSource::SetLooping( Looping );
+
+	bool IsStreaming = m_DataProvider && m_DataProvider->IsStreaming();
+
+	if ( !IsStreaming )
+	{
+		alSourcei( m_SourceID, AL_LOOPING, Looping ? AL_TRUE : AL_FALSE );
+	}
 }
 
 std::shared_ptr<iAudioSubsystem> CreateAudioSubsystem_OpenAL()
