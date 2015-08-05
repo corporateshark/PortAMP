@@ -7,9 +7,32 @@
 #include "Decoders/WAV/WAVDataProvider.h"
 #include "Utils.h"
 
+struct sConfig
+{
+	sConfig()
+	: m_Loop( false )
+	{}
+
+	bool m_Loop;
+};
+
+sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
+{
+	sConfig Cfg;
+
+	for ( int i = 1; i < argc; i++ )
+	{
+		if ( strstr( argv[i], "--loop" ) == argv[i] ) Cfg.m_Loop = true;
+	}
+
+	return Cfg;
+}
+
 int main( int argc, char* argv[] )
 {
-	const char* FileName = ( argc > 1 ) ? argv[1] : "test.wav";
+	sConfig Config = ReadConfigFromCommandLine( argc, argv );
+
+	const char* FileName = ( argc > 1 ) ? argv[1] : "test.ogg";
 
 	auto AudioSubsystem = CreateAudioSubsystem_OpenAL();
 
@@ -19,6 +42,7 @@ int main( int argc, char* argv[] )
 	auto Provider = CreateWaveDataProvider( FileName, TestBlob );
 	auto Source = AudioSubsystem->CreateAudioSource();
 	Source->BindDataProvider( Provider );
+	Source->SetLooping( Config.m_Loop );
 	Source->Play();
 
 	while ( Source->IsPlaying() && !IsKeyPressed() )
