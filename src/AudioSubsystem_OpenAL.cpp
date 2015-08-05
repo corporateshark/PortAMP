@@ -226,7 +226,7 @@ void clAudioSource_OpenAL::EnqueueOneBuffer()
 	}
 	else
 	{
-		this->Stop();
+		if ( !this->IsPlaying() ) this->Stop();
 	}
 }
 
