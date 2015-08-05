@@ -3,6 +3,10 @@ project("PortAMP")
 
 add_subdirectory(libs/minimp3 EXCLUDE_FROM_ALL)
 
+add_definitions(
+	-DMODPLUG_STATIC
+)
+
 include_directories(
 	.
 	src
@@ -10,6 +14,7 @@ include_directories(
 	libs
 	libs/libogg-1.3.2/include
 	libs/libvorbis-1.3.5/include
+	libs/libmodplug-0.8.8.5/src
 )
 
 set(SRC_FILES
@@ -19,6 +24,7 @@ set(SRC_FILES
 	src/Decoders/WAV/WAVDataProvider.cpp
 	src/Decoders/MP3/MP3DataProvider.cpp
 	src/Decoders/OGG/OGGDataProvider.cpp
+	src/Decoders/ModPlug/ModPlugDataProvider.cpp
 	src/OpenAL/LAL.cpp
 	src/Utils.cpp
 )
@@ -30,6 +36,7 @@ set(HEADER_FILES
 	src/Decoders/WAV/WAVDataProvider.h
 	src/Decoders/MP3/MP3DataProvider.h
 	src/Decoders/OGG/OGGDataProvider.h
+	src/Decoders/ModPlug/ModPlugDataProvider.h
 	src/OpenAL/LAL.h
 	src/Utils.h
 )
@@ -42,22 +49,26 @@ add_executable(portamp
 if(MSVC)
 	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
 	set(CMAKE_C_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 	target_link_libraries(portamp
 		minimp3
 		libogg
 		libvorbis
+		libmodplug
 	)
 elseif(APPLE)
 	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 	include(CMakeLists_Apple.txt)
 	target_link_libraries(portamp
 		minimp3
 		libogg
 		libvorbis
+		libmodplug
 		dl
 		pthread
 	)
@@ -69,6 +80,7 @@ else()
 		ogg
 		vorbis
 		vorbisfile
+		modplug
 		pthread
 		dl
 		openal
