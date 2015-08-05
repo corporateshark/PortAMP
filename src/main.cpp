@@ -21,7 +21,10 @@ int main( int argc, char* argv[] )
 	Source->BindDataProvider( Provider );
 	Source->Play();
 
-	while ( Source->IsPlaying() && !IsKeyPressed() );
+	while ( Source->IsPlaying() && !IsKeyPressed() )
+	{
+		std::this_thread::sleep_for( std::chrono::milliseconds(10) );
+	};
 
 	std::this_thread::sleep_for( std::chrono::milliseconds(300) );
 
