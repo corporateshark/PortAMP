@@ -69,7 +69,7 @@ int clMP3DataProvider::DecodeFromFile( size_t BytesRead )
 
 	m_StreamPos += ByteCount;
 
-	if ( m_StreamPos >= m_Data->GetDataSize() )
+	if ( m_StreamPos >= m_Data->GetDataSize() || !ByteCount )
 	{
 		m_IsEndOfStream = true;
 	}
