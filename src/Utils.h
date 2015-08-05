@@ -4,6 +4,46 @@
 #include <vector>
 #include <stdint.h>
 
+// GCC
+#ifdef __GNUC__
+#  define PLATFORM_GCC
+#  ifdef __clang__
+#     define __COMPILER_VER__ "Clang " __VERSION__
+#  else
+#     define __COMPILER_VER__ "GCC " __VERSION__
+#  endif
+#endif
+
+// Microsoft Visual C++
+#ifdef _MSC_VER
+#  define PLATFORM_MSVC
+#define __COMPILER_VER__ "Microsoft Visual C++"
+#endif
+
+#if defined(_WIN64)
+#  define BUILD_OS "Win64"
+#elif defined(_WIN32)
+#  define BUILD_OS "Win32"
+#elif defined(__APPLE__)
+#  if __x86_64__ || __ppc64__
+#     define BUILD_OS "OS X 64"
+#  else
+#     define BUILD_OS "OS X 32"
+#  endif
+#elif defined(__FreeBSD__)
+#  if __x86_64__ || __ppc64__
+#     define BUILD_OS "FreeBSD 64"
+#  else
+#     define BUILD_OS "FreeBSD 32"
+#  endif
+#else
+#  if __x86_64__ || __ppc64__
+#     define BUILD_OS "Linux64"
+#  else
+#     define BUILD_OS "Linux32"
+#  endif
+#endif
+
 /// A data blob
 class clBlob
 {

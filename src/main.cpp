@@ -1,11 +1,14 @@
 #include <chrono>
 #include <thread>
+#include <stdio.h>
 
 #include "AudioSubsystem.h"
 #include "AudioSubsystem_OpenAL.h"
 #include "Decoders/iWaveDataProvider.h"
 #include "Decoders/WAV/WAVDataProvider.h"
 #include "Utils.h"
+
+const char* PORTAMP_VERSION = "0.99.0";
 
 sConfig g_Config;
 
@@ -22,8 +25,24 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 	return Cfg;
 }
 
+void PrintBanner()
+{
+	printf( "PortAMP version %s (%s)\n", PORTAMP_VERSION, __DATE__ " " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS );
+	printf( "Copyright (C) 2015 Sergey Kosarevsky\n" );
+	printf( "https://github.com/corporateshark/PortAMP\n" );
+	printf( "\n" );
+	printf( "portamp <filename> [--loop] [--wav-modplug]\n" );
+	printf( "\n" );
+}
+
 int main( int argc, char* argv[] )
 {
+	if ( argc <= 1 )
+	{
+		PrintBanner();
+		return 0;
+	}
+
 	g_Config = ReadConfigFromCommandLine( argc, argv );
 
 	const char* FileName = ( argc > 1 ) ? argv[1] : "test.ogg";
