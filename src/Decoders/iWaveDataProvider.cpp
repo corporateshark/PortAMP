@@ -2,6 +2,7 @@
 
 #include "WAV/WAVDataProvider.h"
 #include "MP3/MP3DataProvider.h"
+#include "OGG/OGGDataProvider.h"
 
 const char* GetFileExt( const char* FileName )
 {
@@ -21,6 +22,7 @@ std::shared_ptr<iWaveDataProvider> CreateWaveDataProvider( const char* FileName,
 	const char* Ext = GetFileExt( FileName );
 
 	if ( strcmpi( Ext, "mp3" ) == 0 ) return std::make_shared<clMP3DataProvider>( Data );
+	if ( strcmpi( Ext, "ogg" ) == 0 ) return std::make_shared<clOGGDataProvider>( Data );
 
 	auto MP3Blob = TryMP3InsideWAV( Data );
 

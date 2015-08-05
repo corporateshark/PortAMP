@@ -7,6 +7,9 @@ include_directories(
 	.
 	src
 	src/OpenAL
+	libs
+	libs/libogg-1.3.2/include
+	libs/libvorbis-1.3.5/include
 )
 
 set(SRC_FILES
@@ -15,6 +18,7 @@ set(SRC_FILES
 	src/Decoders/iWaveDataProvider.cpp
 	src/Decoders/WAV/WAVDataProvider.cpp
 	src/Decoders/MP3/MP3DataProvider.cpp
+	src/Decoders/OGG/OGGDataProvider.cpp
 	src/OpenAL/LAL.cpp
 	src/Utils.cpp
 )
@@ -25,6 +29,7 @@ set(HEADER_FILES
 	src/Decoders/iWaveDataProvider.h
 	src/Decoders/WAV/WAVDataProvider.h
 	src/Decoders/MP3/MP3DataProvider.h
+	src/Decoders/OGG/OGGDataProvider.h
 	src/OpenAL/LAL.h
 	src/Utils.h
 )
@@ -35,14 +40,24 @@ add_executable(portamp
 )
 
 if(MSVC)
+	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
+	set(CMAKE_C_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
+	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 	target_link_libraries(portamp
 		minimp3
+		libogg
+		libvorbis
 	)
 elseif(APPLE)
+	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 	include(CMakeLists_Apple.txt)
 	target_link_libraries(portamp
 		minimp3
+		libogg
+		libvorbis
 		dl
 		pthread
 	)
@@ -51,6 +66,9 @@ elseif(APPLE)
 else()
 	target_link_libraries(portamp
 		minimp3
+		ogg
+		vorbis
+		vorbisfile
 		pthread
 		dl
 		openal
