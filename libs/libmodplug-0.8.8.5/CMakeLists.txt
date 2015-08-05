@@ -19,11 +19,12 @@ include_directories(
 )
 
 if(APPLE)
-    add_definitions(
-        -DMODPLUG_BUILD
-        -DMODPLUG_STATIC
-        -DMODPLUG_NO_FILESAVE
-    )
+	add_definitions(
+		-DMODPLUG_BUILD
+		-DMODPLUG_STATIC
+		-DHAVE_SETENV
+		-DHAVE_SINF
+	)
 endif(APPLE)
 
 set(SRC_FILES
