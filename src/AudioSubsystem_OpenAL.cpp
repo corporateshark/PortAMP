@@ -162,10 +162,23 @@ void clAudioSource_OpenAL::PrepareBuffers()
 	{
 		UnqueueAllBuffers();
 
-		StreamBuffer( m_BufferID[0], BUFFER_SIZE );
-		StreamBuffer( m_BufferID[1], BUFFER_SIZE );
+		int BuffersToQueue = 2;
 
-		alSourceQueueBuffers( m_SourceID, 2, &m_BufferID[0] );
+		StreamBuffer( m_BufferID[0], BUFFER_SIZE );
+		if ( StreamBuffer( m_BufferID[1], BUFFER_SIZE ) == 0 )
+		{
+			if ( IsLooping() )
+			{
+				m_DataProvider->Seek(0);
+				StreamBuffer(m_BufferID[1], BUFFER_SIZE);
+			}
+			else
+			{
+				BuffersToQueue = 1;
+			}
+		}
+
+		alSourceQueueBuffers( m_SourceID, BuffersToQueue, &m_BufferID[0] );
 
 		m_AudioSubsystem->RegisterSource( shared_from_this() );
 	}
