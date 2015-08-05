@@ -50,8 +50,6 @@ int main( int argc, char* argv[] )
 		std::this_thread::sleep_for( std::chrono::milliseconds(10) );
 	};
 
-	std::this_thread::sleep_for( std::chrono::milliseconds(300) );
-
 	Source->Stop();
 	Source = nullptr;
 

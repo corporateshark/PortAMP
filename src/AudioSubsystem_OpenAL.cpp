@@ -376,8 +376,12 @@ void clAudioSubsystem_OpenAL::Start()
 				}
 			}
 
+			// A dirty workaround for a possible bug in OpenAL Soft
+			// http://openal.org/pipermail/openal/2015-January/000312.html
+#if !defined(_WIN32)
 			alcDestroyContext( m_Context );
 			alcCloseDevice( m_Device );
+#endif
 
 			m_IsInitialized = false;
 
