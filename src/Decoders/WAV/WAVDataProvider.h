@@ -25,3 +25,5 @@ private:
 	size_t m_DataSize;
 	sWaveDataFormat m_Format;
 };
+
+std::shared_ptr<clBlob> TryMP3InsideWAV( const std::shared_ptr<clBlob>& Data );

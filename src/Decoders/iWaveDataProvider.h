@@ -42,4 +42,4 @@ public:
 	virtual size_t StreamWaveData( size_t Size ) { return 0; }
 };
 
-std::shared_ptr<iWaveDataProvider> CreateWaveDataProvider( const char* FileName, const std::shared_ptr<clBlob> Data );
+std::shared_ptr<iWaveDataProvider> CreateWaveDataProvider( const char* FileName, const std::shared_ptr<clBlob>& Data );

@@ -30,6 +30,28 @@ struct PACKED_STRUCT(1) sWAVHeader
 };
 #pragma pack(pop)
 
+#include "Decoders/MP3/MP3DataProvider.h"
+
+std::shared_ptr<clBlob> TryMP3InsideWAV( const std::shared_ptr<clBlob>& Data )
+{
+	const sWAVHeader* Header = reinterpret_cast<const sWAVHeader*>( Data->GetDataPtr() );
+
+	const uint16_t FORMAT_MP3 = 0x0055;
+
+	bool IsMP3  = Header->FormatTag == FORMAT_MP3;
+	bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
+	bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
+
+	if ( IsRIFF && IsWAVE && IsMP3 )
+	{
+		std::vector<uint8_t> MP3Data( Data->GetDataPtr() + sizeof(sWAVHeader), Data->GetDataPtr() + Data->GetDataSize() );
+
+		return std::make_shared<clBlob>( MP3Data );
+	}
+
+	return nullptr;
+}
+
 clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
 , m_DataSize( Data ? Data->GetDataSize() : 0 )
@@ -39,7 +61,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 	{
 		const sWAVHeader* Header = reinterpret_cast<const sWAVHeader*>( Data->GetDataPtr() );
 
-		const uint16_t FORMAT_PCM = 1;
+		const uint16_t FORMAT_PCM = 0x0001;
 
 		bool IsPCM  = Header->FormatTag == FORMAT_PCM;
 		bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
@@ -52,7 +74,13 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			m_Format.m_SamplesPerSecond = Header->SampleRate;
 			m_Format.m_BitsPerSample    = Header->nBitsperSample;
 
-			m_DataSize = std::min( static_cast<size_t>(Header->DataSize), Data->GetDataSize() - sizeof(sWAVHeader) );
+//			m_DataSize = std::min( static_cast<size_t>(Header->DataSize), Data->GetDataSize() - sizeof(sWAVHeader) );
+
+			m_DataSize = Data->GetDataSize() - sizeof(sWAVHeader);
+
+
+			printf( "m_DataSize = %zu\n", m_DataSize );
+
 		}
 	}
 }
