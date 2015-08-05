@@ -38,7 +38,9 @@ std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName )
 int IsKeyPressed()
 {
 #if defined(_WIN32)
-	return _kbhit();
+	bool Res = _kbhit();
+	while (_kbhit()) getch();
+	return Res;
 #elif defined(__APPLE__)
 	struct termios ttystate;
  	tcgetattr( STDIN_FILENO, &ttystate );
@@ -54,6 +56,8 @@ int IsKeyPressed()
 	bool HasKey = FD_ISSET( STDIN_FILENO, &fds );
 	return HasKey ? fgetc( stdin ) : 0;
 #else
-	return kbhit();
+	bool Res = kbhit();
+	while (kbhit()) getch();
+	return Res;
 #endif
 }
