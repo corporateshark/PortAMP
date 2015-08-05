@@ -74,10 +74,15 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			m_Format.m_SamplesPerSecond = Header->SampleRate;
 			m_Format.m_BitsPerSample    = Header->nBitsperSample;
 
-//			m_DataSize = std::min( static_cast<size_t>(Header->DataSize), Data->GetDataSize() - sizeof(sWAVHeader) );
+			m_DataSize = std::min( static_cast<size_t>(Header->DataSize), Data->GetDataSize() - sizeof(sWAVHeader) );
 
-			m_DataSize = Data->GetDataSize() - sizeof(sWAVHeader);
+//			m_DataSize = Data->GetDataSize() - sizeof(sWAVHeader);
 
+			printf( "PCM WAVE\n" );
+  
+			printf( "Channels    = %i\n", Header->Channels );
+			printf( "Samples/S   = %i\n", Header->SampleRate );
+			printf( "Bits/Sample = %i\n", Header->nBitsperSample );
 
 			printf( "m_DataSize = %zu\n", m_DataSize );
 
@@ -104,3 +109,4 @@ void clWAVDataProvider::Seek( float Seconds )
 {
 	// TODO:
 }
+
