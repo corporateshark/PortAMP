@@ -240,6 +240,7 @@ void clAudioSource_OpenAL::EnqueueOneBuffer()
 	}
 	else
 	{
+		// there is nothing more to play, but don't stop now if something is still playing
 		if ( !this->IsPlaying() ) this->Stop();
 	}
 }
