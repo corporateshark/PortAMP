@@ -67,6 +67,9 @@ int clMP3DataProvider::DecodeFromFile( size_t BytesRead )
 		&m_MP3Info
 	);
 
+	m_Format.m_NumChannels      = m_MP3Info.channels;
+	m_Format.m_SamplesPerSecond = m_MP3Info.sample_rate;
+
 	m_StreamPos += ByteCount;
 
 	if ( m_StreamPos >= m_Data->GetDataSize() || !ByteCount )
