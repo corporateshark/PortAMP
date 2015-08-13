@@ -31,7 +31,6 @@ clModPlugDataProvider::clModPlugDataProvider( const std::shared_ptr<clBlob>& Dat
 , m_Format()
 , m_DecodingBuffer()
 , m_BufferUsed( 0 )
-, m_StreamPos( 0 )
 , m_IsEndOfStream( false )
 {
 	LoadModPlug();

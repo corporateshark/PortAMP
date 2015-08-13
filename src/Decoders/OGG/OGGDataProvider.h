@@ -42,7 +42,6 @@ private:
 	std::vector<uint8_t> m_DecodingBuffer;
 	size_t m_BufferUsed;
 
-	size_t m_StreamPos;
 	bool m_IsEndOfStream;
 
 	// Vorbis stuff
