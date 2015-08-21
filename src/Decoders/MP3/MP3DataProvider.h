@@ -32,6 +32,7 @@ public:
 private:
 	int DecodeFromFile( size_t BytesRead );
 	void LoadMP3Info();
+	void SkipTags();
 
 private:
 	std::shared_ptr<clBlob> m_Data;

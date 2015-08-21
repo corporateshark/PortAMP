@@ -1,5 +1,6 @@
 #include "MP3DataProvider.h"
 #include "Utils.h"
+#include "id3v2lib.h"
 
 extern "C"
 {
@@ -28,12 +29,28 @@ clMP3DataProvider::~clMP3DataProvider()
 	mp3_done( (mp3_decoder_t*)m_MP3Decoder );
 }
 
+void clMP3DataProvider::SkipTags()
+{
+	ID3v2_header* ID3TagHeader = get_tag_header_with_buffer(
+		reinterpret_cast<const char*>( m_Data->GetDataPtr() + m_StreamPos ),
+		static_cast<int>( m_Data->GetDataSize() - m_StreamPos )
+	);
+
+	if ( ID3TagHeader )
+	{
+		m_StreamPos += ID3TagHeader->tag_size;
+		free( ID3TagHeader );
+	}
+}
+
 void clMP3DataProvider::LoadMP3Info()
 {
+	SkipTags();
+
 	int byteCount = mp3_decode(
 		(mp3_decoder_t*)m_MP3Decoder,
-		m_Data ? const_cast<uint8_t*>( m_Data->GetDataPtr() ) : nullptr,
-		m_Data ? m_Data->GetDataSize() : 0,
+		m_Data ? const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ) : nullptr,
+		m_Data ? m_Data->GetDataSize() - m_StreamPos: 0,
 		(signed short*)m_DecodingBuffer.data(),
 		&m_MP3Info
 	);
