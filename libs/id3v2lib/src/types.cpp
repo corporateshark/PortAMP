@@ -36,6 +36,11 @@ ID3v2_header* new_header()
     return tag_header;
 }
 
+void delete_header(ID3v2_header* header)
+{
+	if (header) free(header);
+}
+
 ID3v2_frame* new_frame()
 {
     ID3v2_frame* frame = (ID3v2_frame*) malloc(sizeof(ID3v2_frame));
