@@ -39,7 +39,7 @@ void clMP3DataProvider::SkipTags()
 	if ( ID3TagHeader )
 	{
 		m_StreamPos += ID3TagHeader->tag_size;
-		free( ID3TagHeader );
+		delete_header( ID3TagHeader );
 	}
 }
 
