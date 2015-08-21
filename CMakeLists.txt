@@ -15,6 +15,7 @@ include_directories(
 	libs/libogg-1.3.2/include
 	libs/libvorbis-1.3.5/include
 	libs/libmodplug-0.8.8.5/src
+	libs/id3v2lib/include
 )
 
 set(SRC_FILES
@@ -50,6 +51,7 @@ if(MSVC)
 	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	set(CMAKE_C_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 	target_link_libraries(portamp
@@ -57,11 +59,13 @@ if(MSVC)
 		libogg
 		libvorbis
 		libmodplug
+		id3v2
 	)
 elseif(APPLE)
 	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 	include(CMakeLists_Apple.txt)
 	target_link_libraries(portamp
@@ -69,6 +73,7 @@ elseif(APPLE)
 		libogg
 		libvorbis
 		libmodplug
+		id3v2
 		dl
 		pthread
 	)
@@ -81,6 +86,7 @@ else()
 		vorbis
 		vorbisfile
 		modplug
+		id3v2lib
 		pthread
 		dl
 		openal
