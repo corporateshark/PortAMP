@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "iWaveDataProvider.h"
 
 #include "WAV/WAVDataProvider.h"

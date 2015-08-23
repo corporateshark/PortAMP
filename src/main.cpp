@@ -1,5 +1,6 @@
 #include <chrono>
 #include <thread>
+#include <cstring>
 #include <stdio.h>
 
 #include "AudioSubsystem.h"

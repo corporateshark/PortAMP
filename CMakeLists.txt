@@ -80,13 +80,15 @@ elseif(APPLE)
 	include_directories(/usr/local/include /opt/local/include)
 	ADD_FRAMEWORK(OpenAL portamp)
 else()
+	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
+	set(CMAKE_CXX_FLAGS "-std=c++11")
 	target_link_libraries(portamp
 		minimp3
 		ogg
 		vorbis
 		vorbisfile
 		modplug
-		id3v2lib
+		id3v2
 		pthread
 		dl
 		openal

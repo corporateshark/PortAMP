@@ -2,7 +2,7 @@
 
 #include "Utils.h"
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__linux__)
 #	include <sys/select.h>
 #	include <sys/time.h>
 #	include <sys/types.h>
@@ -41,7 +41,7 @@ int IsKeyPressed()
 	bool Res = _kbhit();
 	while (_kbhit()) getch();
 	return Res;
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 	struct termios ttystate;
  	tcgetattr( STDIN_FILENO, &ttystate );
 	ttystate.c_lflag &= ~ICANON;

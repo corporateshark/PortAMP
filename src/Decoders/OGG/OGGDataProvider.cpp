@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "OGGDataProvider.h"
 #include "Utils.h"
 
