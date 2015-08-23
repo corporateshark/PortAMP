@@ -12,7 +12,7 @@
 
 #include "types.h"
 #include "constants.h"
-#include "utils.h"
+#include "util.h"
 
 int has_id3v2tag(ID3v2_header* tag_header);
 int _has_id3v2tag(char* raw_header);

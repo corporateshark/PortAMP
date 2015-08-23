@@ -7,6 +7,8 @@ if(MSVC)
 else()
 	ADD_DEFINITIONS(-O2)
 	ADD_DEFINITIONS(-Wno-deprecated-writable-strings)
+	ADD_DEFINITIONS(-Wno-write-strings)
+	ADD_DEFINITIONS(-Wno-unused-result)
 endif()
 
 SET(VERSION_MAJOR 1)
