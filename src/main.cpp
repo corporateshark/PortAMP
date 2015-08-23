@@ -9,7 +9,7 @@
 #include "Decoders/WAV/WAVDataProvider.h"
 #include "Utils.h"
 
-const char* PORTAMP_VERSION = "0.99.0";
+const char* PORTAMP_VERSION = "0.99.1";
 
 sConfig g_Config;
 
