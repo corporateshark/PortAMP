@@ -4,6 +4,8 @@
 
 #include "Decoders/iWaveDataProvider.h"
 
+#include "flac/stream_decoder.h"
+
 class clBlob;
 struct sFLACStreamData;
 
@@ -26,6 +28,15 @@ public:
 
 private:
 	int DecodeFromFile( size_t Size );
+
+	static FLAC__StreamDecoderWriteStatus flacWrite( const FLAC__StreamDecoder* Decoder, const FLAC__Frame* Frame, const FLAC__int32* const Buffer[], void* UserData );
+	static FLAC__StreamDecoderReadStatus flacRead( const FLAC__StreamDecoder* Decoder, FLAC__byte Buffer[], size_t* Bytes, void* UserData );
+	static FLAC__StreamDecoderSeekStatus flacSeek( const FLAC__StreamDecoder* Decoder, FLAC__uint64 Absolute_byte_offset, void* UserData );
+	static FLAC__StreamDecoderTellStatus flacTell( const FLAC__StreamDecoder* Decoder, FLAC__uint64* Absolute_byte_offset, void* UserData );
+	static FLAC__StreamDecoderLengthStatus flacLength( const FLAC__StreamDecoder* Decoder, FLAC__uint64* StreamLength, void* UserData );
+	static FLAC__bool flacEof(const FLAC__StreamDecoder* Decoder, void* UserData );
+	static void flacError( const FLAC__StreamDecoder* Decoder, FLAC__StreamDecoderErrorStatus Status, void* UserData );
+	static void flacMeta( const FLAC__StreamDecoder* Decoder, const FLAC__StreamMetadata* MetaData, void* UserData );
 
 private:
 	std::shared_ptr<clBlob> m_Data;
