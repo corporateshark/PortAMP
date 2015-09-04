@@ -174,6 +174,7 @@ clFLACDataProvider::clFLACDataProvider( const std::shared_ptr<clBlob>& Data )
 , m_StreamData( std::make_shared<sFLACStreamData>() )
 , m_DecodingBuffer()
 , m_BufferUsed( 0 )
+, m_IsEndOfStream( false )
 {
 	{
 		FLAC__StreamDecoderInitStatus Status = FLAC__stream_decoder_init_stream(
@@ -234,9 +235,17 @@ size_t clFLACDataProvider::StreamWaveData( size_t Size )
 		State = FLAC__stream_decoder_get_state( m_StreamData->m_Decoder );
 	}
 
+	m_IsEndOfStream = State == FLAC__STREAM_DECODER_END_OF_STREAM;
+
 	return m_BufferUsed;
 }
 
 void clFLACDataProvider::Seek( float Seconds )
 {
+	m_IsEndOfStream = false;
+
+	FLAC__stream_decoder_seek_absolute(
+		m_StreamData->m_Decoder,
+		static_cast<uint64_t>( static_cast<double>(Seconds) * m_Format.m_SamplesPerSecond )
+	);
 }
