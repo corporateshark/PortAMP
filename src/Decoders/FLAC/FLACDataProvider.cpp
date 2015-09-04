@@ -7,7 +7,6 @@ struct sFLACStreamData
 {
 	sFLACStreamData()
 	: m_Decoder( FLAC__stream_decoder_new() )
-	, m_CurSample( 0 )
 	, m_Position( 0 )
 	, m_TotalSamples( 0 )
 	{}
@@ -18,7 +17,6 @@ struct sFLACStreamData
 	}
 
 	FLAC__StreamDecoder* m_Decoder;
-	uint64_t m_CurSample;
 	int64_t m_Position;
 	uint64_t m_TotalSamples;
 };
@@ -31,7 +29,12 @@ FLAC__StreamDecoderWriteStatus clFLACDataProvider::flacWrite(
 	
 	clFLACDataProvider* P = reinterpret_cast<clFLACDataProvider*>( UserData );
 
-	int NumBytes = NumSamples * P->m_Format.m_NumChannels * P->m_Format.m_BitsPerSample / 8;
+	int NumChannels    = P->m_Format.m_NumChannels;
+	int BytesPerSample = P->m_Format.m_BitsPerSample / 8;
+	int NumBytes = NumSamples * NumChannels * BytesPerSample;
+
+	// only 16-bit format is supported
+	if ( BytesPerSample != 2 ) return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 
 	if ( Buffer )
 	{
@@ -40,26 +43,18 @@ FLAC__StreamDecoderWriteStatus clFLACDataProvider::flacWrite(
 			P->m_DecodingBuffer.resize( P->m_BufferUsed + NumBytes );
 		}
 
-		switch ( P->m_Format.m_NumChannels )
+		// 16-bit only
+		int16_t* Target = reinterpret_cast<int16_t*>( P->m_DecodingBuffer.data() + P->m_BufferUsed );
+		for ( int i = 0; i != NumSamples; i++ )
 		{
-			case 2:
+			for ( int c = 0; c != NumChannels; c++ )
 			{
-				int16_t* Target = reinterpret_cast<int16_t*>( P->m_DecodingBuffer.data() + P->m_BufferUsed );
-				for ( int i = 0; i != NumSamples; i++ )
-				{
-					int16_t l = ((int32_t*)Buffer[0])[i];
-					int16_t r = ((int32_t*)Buffer[1])[i];
-					*Target++ = l;
-					*Target++ = r;
-				}
-				break;
+				*Target++ = ((int32_t*)Buffer[c])[i];
 			}
-			default:;
 		}
 	}
 
 	P->m_BufferUsed += NumBytes;
-	P->m_StreamData->m_CurSample += NumSamples;
 	
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
