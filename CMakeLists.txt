@@ -28,7 +28,7 @@ set(SRC_FILES
 	src/Decoders/MP3/MP3DataProvider.cpp
 	src/Decoders/OGG/OGGDataProvider.cpp
 	src/Decoders/ModPlug/ModPlugDataProvider.cpp
-	src/Decoders/FLAC/FlacDataProvider.cpp
+	src/Decoders/FLAC/FLACDataProvider.cpp
 	src/OpenAL/LAL.cpp
 	src/Utils.cpp
 )
@@ -41,7 +41,7 @@ set(HEADER_FILES
 	src/Decoders/MP3/MP3DataProvider.h
 	src/Decoders/OGG/OGGDataProvider.h
 	src/Decoders/ModPlug/ModPlugDataProvider.h
-	src/Decoders/FLAC/FlacDataProvider.h
+	src/Decoders/FLAC/FLACDataProvider.h
 	src/OpenAL/LAL.h
 	src/Utils.h
 )
@@ -96,7 +96,7 @@ else()
 		vorbis
 		vorbisfile
 		modplug
-		flac
+		FLAC
 		id3v2
 		pthread
 		dl

@@ -4,7 +4,7 @@
 
 #include "Decoders/iWaveDataProvider.h"
 
-#include "flac/stream_decoder.h"
+#include "FLAC/stream_decoder.h"
 
 class clBlob;
 struct sFLACStreamData;

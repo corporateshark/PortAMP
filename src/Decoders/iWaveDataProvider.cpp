@@ -6,7 +6,7 @@
 #include "MP3/MP3DataProvider.h"
 #include "OGG/OGGDataProvider.h"
 #include "ModPlug/ModPlugDataProvider.h"
-#include "FLAC/FlacDataProvider.h"
+#include "FLAC/FLACDataProvider.h"
 #include "Utils.h"
 
 const char* GetFileExt( const char* FileName )
