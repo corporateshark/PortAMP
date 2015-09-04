@@ -293,6 +293,7 @@ void clAudioSource_OpenAL::Stop()
 	alSourceStop( m_SourceID );
 
 	UnqueueAllBuffers();
+
 	m_AudioSubsystem->UnregisterSource( this );
 
 	if ( m_DataProvider )
@@ -339,6 +340,10 @@ clAudioSubsystem_OpenAL::clAudioSubsystem_OpenAL()
 
 clAudioSubsystem_OpenAL::~clAudioSubsystem_OpenAL()
 {
+	std::lock_guard<std::mutex> Lock( m_ActiveSourcesMutex );
+
+	m_ActiveSources.clear();
+
 	UnloadAL();
 }
 
