@@ -26,6 +26,7 @@ Features:
 * WAV (uncompressed PCM, 8 or 16-bit, mono or stereo)
 * MP3 (using the MiniMP3 library http://keyj.emphy.de/minimp3)
 * OGG (using libogg/libvorbis https://xiph.org/downloads)
+* FLAC (using libflac https://xiph.org/downloads)
 * Modules: MOD, S3M, XM, IT, 669, AMF, AMS, DBM, DMF, DSM, FAR, MDL, MED, MTM, OKT, PTM, STM, ULT, UMX, MT2, PSM (using libmodplug http://modplug-xmms.sourceforge.net)
 
 =============================
