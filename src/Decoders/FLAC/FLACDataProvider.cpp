@@ -47,8 +47,8 @@ FLAC__StreamDecoderWriteStatus clFLACDataProvider::flacWrite(
 				int16_t* Target = reinterpret_cast<int16_t*>( P->m_DecodingBuffer.data() + P->m_BufferUsed );
 				for ( int i = 0; i != NumSamples; i++ )
 				{
-					int16_t l = ((int16_t*)Buffer[0])[i];
-					int16_t r = ((int16_t*)Buffer[1])[i];
+					int16_t l = ((int32_t*)Buffer[0])[i];
+					int16_t r = ((int32_t*)Buffer[1])[i];
 					*Target++ = l;
 					*Target++ = r;
 				}
@@ -56,8 +56,6 @@ FLAC__StreamDecoderWriteStatus clFLACDataProvider::flacWrite(
 			}
 			default:;
 		}
-
-//		memcpy( P->m_DecodingBuffer.data() + P->m_BufferUsed, Buffer, NumBytes );
 	}
 
 	P->m_BufferUsed += NumBytes;
