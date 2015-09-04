@@ -9,6 +9,7 @@ struct sFLACStreamData
 	: m_Decoder( FLAC__stream_decoder_new() )
 	, m_CurSample( 0 )
 	, m_Position( 0 )
+	, m_TotalSamples( 0 )
 	{}
 
 	~sFLACStreamData()
@@ -18,13 +19,50 @@ struct sFLACStreamData
 
 	FLAC__StreamDecoder* m_Decoder;
 	uint64_t m_CurSample;
-	uint64_t m_Position;
+	int64_t m_Position;
+	uint64_t m_TotalSamples;
 };
 
 FLAC__StreamDecoderWriteStatus clFLACDataProvider::flacWrite(
 	const FLAC__StreamDecoder* Decoder, const FLAC__Frame* Frame, const FLAC__int32* const Buffer[], void* UserData
 )
 {
+	unsigned int NumSamples = Frame->header.blocksize;
+	
+	clFLACDataProvider* P = reinterpret_cast<clFLACDataProvider*>( UserData );
+
+	int NumBytes = NumSamples * P->m_Format.m_NumChannels * P->m_Format.m_BitsPerSample / 8;
+
+	if ( Buffer )
+	{
+		if ( P->m_BufferUsed + NumBytes > P->m_DecodingBuffer.size() )
+		{
+			P->m_DecodingBuffer.resize( P->m_BufferUsed + NumBytes );
+		}
+
+		switch ( P->m_Format.m_NumChannels )
+		{
+			case 2:
+			{
+				int16_t* Target = reinterpret_cast<int16_t*>( P->m_DecodingBuffer.data() + P->m_BufferUsed );
+				for ( int i = 0; i != NumSamples; i++ )
+				{
+					int16_t l = ((int16_t*)Buffer[0])[i];
+					int16_t r = ((int16_t*)Buffer[1])[i];
+					*Target++ = l;
+					*Target++ = r;
+				}
+				break;
+			}
+			default:;
+		}
+
+//		memcpy( P->m_DecodingBuffer.data() + P->m_BufferUsed, Buffer, NumBytes );
+	}
+
+	P->m_BufferUsed += NumBytes;
+	P->m_StreamData->m_CurSample += NumSamples;
+	
 	return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
@@ -45,6 +83,7 @@ FLAC__StreamDecoderReadStatus clFLACDataProvider::flacRead(
 	}
 
 	*Bytes = BytesRead;
+	P->m_StreamData->m_Position += BytesRead;
 
 	return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
 }
@@ -53,7 +92,11 @@ FLAC__StreamDecoderSeekStatus clFLACDataProvider::flacSeek(
 	const FLAC__StreamDecoder* Decoder, FLAC__uint64 Absolute_byte_offset, void* UserData
 )
 {
-	return FLAC__STREAM_DECODER_SEEK_STATUS_UNSUPPORTED;
+	clFLACDataProvider* P = reinterpret_cast<clFLACDataProvider*>( UserData );
+
+	P->m_StreamData->m_Position = Absolute_byte_offset;
+	
+	return FLAC__STREAM_DECODER_SEEK_STATUS_OK;
 }
 
 FLAC__StreamDecoderTellStatus clFLACDataProvider::flacTell(
@@ -116,11 +159,23 @@ void clFLACDataProvider::flacMeta(
 	const FLAC__StreamDecoder* Decoder, const FLAC__StreamMetadata* MetaData, void* UserData
 )
 {
+	clFLACDataProvider* P = reinterpret_cast<clFLACDataProvider*>( UserData );
+
+	if ( MetaData->type == FLAC__METADATA_TYPE_STREAMINFO )
+	{
+		P->m_StreamData->m_TotalSamples = MetaData->data.stream_info.total_samples;
+		P->m_Format.m_SamplesPerSecond = MetaData->data.stream_info.sample_rate;
+		P->m_Format.m_NumChannels      = MetaData->data.stream_info.channels;
+		P->m_Format.m_BitsPerSample    = MetaData->data.stream_info.bits_per_sample;
+	}
 }
 
 clFLACDataProvider::clFLACDataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
+, m_Format()
 , m_StreamData( std::make_shared<sFLACStreamData>() )
+, m_DecodingBuffer()
+, m_BufferUsed( 0 )
 {
 	{
 		FLAC__StreamDecoderInitStatus Status = FLAC__stream_decoder_init_stream(
@@ -161,17 +216,27 @@ clFLACDataProvider::~clFLACDataProvider()
 
 const uint8_t* clFLACDataProvider::GetWaveData() const
 {
-	return nullptr;
+	return m_DecodingBuffer.data();
 }
 
 size_t clFLACDataProvider::GetWaveDataSize() const
 {
-	return 0;
+	return m_BufferUsed;
 }
 
 size_t clFLACDataProvider::StreamWaveData( size_t Size )
 {
-	return 0;
+	m_BufferUsed = 0;
+
+	auto State = FLAC__stream_decoder_get_state( m_StreamData->m_Decoder );
+
+	while( State < FLAC__STREAM_DECODER_END_OF_STREAM && m_BufferUsed < Size )
+	{
+		FLAC__bool Result = FLAC__stream_decoder_process_single( m_StreamData->m_Decoder );
+		State = FLAC__stream_decoder_get_state( m_StreamData->m_Decoder );
+	}
+
+	return m_BufferUsed;
 }
 
 void clFLACDataProvider::Seek( float Seconds )
