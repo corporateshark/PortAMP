@@ -14,11 +14,15 @@ public:
 	}
 
 	virtual bool IsEmpty() const { return m_FileNames.empty(); }
-	virtual std::string GetAndPopNextTrack()
+	virtual size_t GetNumTracks() const { return m_FileNames.size(); }
+	virtual std::string GetAndPopNextTrack( bool Loop )
 	{
 		std::string Result = m_FileNames.front();
 
 		m_FileNames.pop_front();
+
+		// readd to the end of the list
+		if ( Loop ) m_FileNames.push_back( Result );
 
 		return Result;
 	}

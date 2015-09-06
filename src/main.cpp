@@ -10,7 +10,7 @@
 #include "Utils.h"
 #include "Playlist.h"
 
-const char* PORTAMP_VERSION = "0.99.9";
+const char* PORTAMP_VERSION = "1.0.0";
 
 sConfig g_Config;
 clPlaylist g_Playlist;
@@ -56,16 +56,17 @@ int main( int argc, char* argv[] )
 	AudioSubsystem->Start();
 
 	auto Source = AudioSubsystem->CreateAudioSource();
+	// allow seamless looping if there is only one track
+	if ( g_Playlist.GetNumTracks() == 1 ) Source->SetLooping( g_Config.m_Loop );
 
 	bool RequestingExit = false;
 
-	while ( !g_Playlist.IsEmpty() )
+	while ( !g_Playlist.IsEmpty() && !RequestingExit )
 	{
-		auto FileName = g_Playlist.GetAndPopNextTrack();
+		auto FileName = g_Playlist.GetAndPopNextTrack( g_Config.m_Loop );
 		auto DataBlob = ReadFileAsBlob( FileName.c_str() );
 		auto Provider = CreateWaveDataProvider( FileName.c_str(), DataBlob );
 		Source->BindDataProvider( Provider );
-		Source->SetLooping( g_Config.m_Loop );
 		Source->Play();
 
 		while ( Source->IsPlaying() && !RequestingExit )
