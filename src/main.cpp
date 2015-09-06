@@ -23,6 +23,7 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 	{
 		if ( strstr( argv[i], "--loop" ) == argv[i] ) Cfg.m_Loop = true;
 		else if ( strstr( argv[i], "--wav-modplug" ) == argv[i] ) Cfg.m_UseModPlugToDecodeWAV = true;
+		else if ( strstr( argv[i], "--verbose" ) == argv[i] ) Cfg.m_Verbose = true;
 		else g_Playlist.EnqueueTrack( argv[i] );
 	}
 
@@ -35,7 +36,7 @@ void PrintBanner()
 	printf( "Copyright (C) 2015 Sergey Kosarevsky\n" );
 	printf( "https://github.com/corporateshark/PortAMP\n" );
 	printf( "\n" );
-	printf( "portamp <filename> [--loop] [--wav-modplug]\n" );
+	printf( "portamp <filename1> [<filename2> ...] [--loop] [--wav-modplug] [--verbose]\n" );
 	printf( "\n" );
 }
 

@@ -14,6 +14,7 @@
 #include "AudioSubsystem_OpenAL.h"
 #include "Decoders/iWaveDataProvider.h"
 #include "OpenAL/LAL.h"
+#include "Utils.h"
 
 const int BUFFER_DURATION = 250; // milliseconds
 const int BUFFER_SIZE = 44100 * 2 * 2 * BUFFER_DURATION / 1000;
@@ -352,7 +353,7 @@ void clAudioSubsystem_OpenAL::DebugPrintVersion()
 	printf( "OpenAL version : %s\n", alGetString( AL_VERSION  ) );
 	printf( "OpenAL vendor  : %s\n", alGetString( AL_VENDOR   ) );
 	printf( "OpenAL renderer: %s\n", alGetString( AL_RENDERER ) );
-	printf( "OpenAL extensions:\n%s\n", alGetString( AL_EXTENSIONS ) );
+	printf( "OpenAL extensions:\n%s\n\n", alGetString( AL_EXTENSIONS ) );
 }
 
 void clAudioSubsystem_OpenAL::Start()
@@ -364,7 +365,7 @@ void clAudioSubsystem_OpenAL::Start()
 			m_Context = alcCreateContext( m_Device, nullptr );
 			alcMakeContextCurrent( m_Context );
 
-			DebugPrintVersion();
+			if ( IsVerbose() ) DebugPrintVersion();
 
 			m_IsInitialized = true;
 

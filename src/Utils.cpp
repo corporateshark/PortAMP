@@ -16,6 +16,8 @@
 
 std::vector<uint8_t> ReadFileAsVector( const char* FileName )
 {
+	if ( IsVerbose() ) printf( "Opening %s\n\n", FileName );
+
 	std::ifstream File( FileName, std::ifstream::binary | std::ios::in );
 
 	if ( File.fail() )
@@ -69,6 +71,10 @@ int IsKeyPressed()
 #endif
 }
 
+bool IsVerbose()
+{
+	return g_Config.m_Verbose;
+}
 
 void Log_Error( const char* Format... )
 {

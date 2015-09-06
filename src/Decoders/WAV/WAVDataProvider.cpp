@@ -79,13 +79,16 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 //			m_DataSize = Data->GetDataSize() - sizeof(sWAVHeader);
 
-			printf( "PCM WAVE\n" );
+			if ( IsVerbose() )
+			{
+				printf( "PCM WAVE\n" );
   
-			printf( "Channels    = %i\n", Header->Channels );
-			printf( "Samples/S   = %i\n", Header->SampleRate );
-			printf( "Bits/Sample = %i\n", Header->nBitsperSample );
+				printf( "Channels    = %i\n", Header->Channels );
+				printf( "Samples/S   = %i\n", Header->SampleRate );
+				printf( "Bits/Sample = %i\n", Header->nBitsperSample );
 
-			printf( "m_DataSize = %zu\n", m_DataSize );
+				printf( "m_DataSize = %zu\n\n", m_DataSize );
+			}
 
 		}
 	}
