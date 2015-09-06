@@ -318,7 +318,7 @@ void clAudioSource_OpenAL::SetLooping( bool Looping )
 
 	bool IsStreaming = m_DataProvider && m_DataProvider->IsStreaming();
 
-	if ( !IsStreaming )
+	if ( m_DataProvider && !IsStreaming )
 	{
 		alSourcei( m_SourceID, AL_LOOPING, Looping ? AL_TRUE : AL_FALSE );
 	}
