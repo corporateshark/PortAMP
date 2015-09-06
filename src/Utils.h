@@ -74,3 +74,5 @@ struct sConfig
 std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName );
 
 int IsKeyPressed();
+
+void Log_Error( const char* Format... );

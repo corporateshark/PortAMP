@@ -1,4 +1,5 @@
 #include <fstream>
+#include <cstdarg>
 
 #include "Utils.h"
 
@@ -15,7 +16,13 @@
 
 std::vector<uint8_t> ReadFileAsVector( const char* FileName )
 {
-	std::ifstream File( FileName, std::ifstream::binary );
+	std::ifstream File( FileName, std::ifstream::binary | std::ios::in );
+
+	if ( File.fail() )
+	{
+		Log_Error( "Unable to open file: %s", FileName );
+		return std::vector<uint8_t>();
+	}
 
 	File.seekg( 0, std::ios::end );
 	std::streampos End = File.tellg();
@@ -60,4 +67,19 @@ int IsKeyPressed()
 	while (kbhit()) getch();
 	return Res;
 #endif
+}
+
+
+void Log_Error( const char* Format... )
+{
+	va_list Args;
+	va_start( Args, Format );
+
+	printf( "\n" );
+	vprintf( Format, Args );
+	printf( "\n" );
+
+	va_end( Args );
+
+	fflush( stdout );
 }
