@@ -17,7 +17,7 @@ Usage:
 ------
 
 ```
-portamp <filename> [--loop] [--wav-modplug]
+portamp <filename> [<filename2> ...] [--loop] [--wav-modplug] [--verbose]
 ```
 
 Features:

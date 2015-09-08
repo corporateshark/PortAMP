@@ -65,14 +65,19 @@ struct sConfig
 	sConfig()
 	: m_Loop( false )
 	, m_UseModPlugToDecodeWAV( false )
+	, m_Verbose( false )
 	{}
 
 	bool m_Loop;
 	bool m_UseModPlugToDecodeWAV;
+	bool m_Verbose;
 };
 
 std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName );
 
 int IsKeyPressed();
+bool IsVerbose();
 
 void Log_Error( const char* Format... );
+
+extern sConfig g_Config;
