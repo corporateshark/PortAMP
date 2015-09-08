@@ -53,6 +53,18 @@ std::shared_ptr<clBlob> TryMP3InsideWAV( const std::shared_ptr<clBlob>& Data )
 	return nullptr;
 }
 
+template <typename T> void ConvertClamp_IEEEToInt16( const T* Src, int16_t* Dst, size_t NumFloats )
+{
+	const T* End = Src + NumFloats;
+
+	while ( Src < End )
+	{
+		T f = *Src++;
+		int32_t v = int( f * 32167.0 );
+		*Dst++ = ( v > 32167 ) ? 32167 : ( v < -32167 ) ? -32167 : v;
+	}
+}
+
 clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
 , m_DataSize( Data ? Data->GetDataSize() : 0 )
@@ -62,14 +74,16 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 	{
 		const sWAVHeader* Header = reinterpret_cast<const sWAVHeader*>( Data->GetDataPtr() );
 
-		const uint16_t FORMAT_PCM = 0x0001;
+		const uint16_t FORMAT_PCM   = 0x0001;
+		const uint16_t FORMAT_FLOAT = 0x0003;
 
-		bool IsPCM  = Header->FormatTag == FORMAT_PCM;
+		bool IsPCM   = Header->FormatTag == FORMAT_PCM;
+		bool IsFloat = Header->FormatTag == FORMAT_FLOAT;
 		bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
 		bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
 
 		// can only handle uncompressed .WAV files
-		if ( IsRIFF && IsWAVE && IsPCM )
+		if ( IsRIFF && IsWAVE && (IsPCM|IsFloat) )
 		{
 			m_Format.m_NumChannels      = Header->Channels;
 			m_Format.m_SamplesPerSecond = Header->SampleRate;
@@ -77,7 +91,34 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 			m_DataSize = std::min( static_cast<size_t>(Header->DataSize), Data->GetDataSize() - sizeof(sWAVHeader) );
 
-//			m_DataSize = Data->GetDataSize() - sizeof(sWAVHeader);
+			if ( IsFloat )
+			{
+				// replace the blob and convert data to 16-bit
+				std::vector<uint8_t> NewData;
+				NewData.resize( m_Data->GetDataSize() );
+				int16_t* Dst = reinterpret_cast<int16_t*>( NewData.data()+sizeof(sWAVHeader) );
+
+				if ( Header->nBitsperSample == 32 )
+				{
+					const float* Src = reinterpret_cast<const float*>( m_Data->GetDataPtr()+sizeof(sWAVHeader)+2 );
+					ConvertClamp_IEEEToInt16<float>( Src, Dst, m_DataSize / 4 );
+					m_DataSize = m_DataSize/2 - 3;
+				}
+				else if ( Header->nBitsperSample == 64 )
+				{
+					const double* Src = reinterpret_cast<const double*>( m_Data->GetDataPtr()+sizeof(sWAVHeader)+2 );
+					ConvertClamp_IEEEToInt16<double>( Src, Dst, m_DataSize / 8 );
+					m_DataSize = m_DataSize/4 - 3;
+				}
+				else 
+				{
+					Log_Error( "Unknown float format in WAV" );
+					m_DataSize = 0;
+				}
+
+				m_Data = std::make_shared<clBlob>( NewData );
+				m_Format.m_BitsPerSample = 16;
+			}
 
 			if ( IsVerbose() )
 			{
@@ -90,6 +131,11 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				printf( "m_DataSize = %zu\n\n", m_DataSize );
 			}
 
+		}
+		else
+		{
+			Log_Error( "Unsupported WAV file" );
+			m_DataSize = 0;
 		}
 	}
 }
