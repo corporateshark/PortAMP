@@ -31,6 +31,7 @@ set(SRC_FILES
 	src/Decoders/ModPlug/ModPlugDataProvider.cpp
 	src/Decoders/FLAC/FLACDataProvider.cpp
 	src/Decoders/APE/APEDataProvider.cpp
+	src/Decoders/Opus/OpusDataProvider.cpp
 	src/OpenAL/LAL.cpp
 	src/Utils.cpp
 )
@@ -45,6 +46,7 @@ set(HEADER_FILES
 	src/Decoders/ModPlug/ModPlugDataProvider.h
 	src/Decoders/FLAC/FLACDataProvider.h
 	src/Decoders/APE/APEDataProvider.h
+	src/Decoders/Opus/OpusDataProvider.h
 	src/OpenAL/LAL.h
 	src/Utils.h
 )
