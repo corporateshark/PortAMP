@@ -5,17 +5,16 @@
 
 #include "Decoders/iWaveDataProvider.h"
 
-#include <ogg/ogg.h>
-#include <vorbis/vorbisfile.h>
-
 class clBlob;
+class IAPEDecompress;
+class CIO;
 
-/// OGG Vorbis decoder
-class clOGGDataProvider: public iWaveDataProvider
+/// APE Monkey Audio decoder
+class clAPEDataProvider: public iWaveDataProvider
 {
 public:
-	explicit clOGGDataProvider( const std::shared_ptr<clBlob>& Data );
-	virtual ~clOGGDataProvider();
+	explicit clAPEDataProvider( const std::shared_ptr<clBlob>& Data );
+	virtual ~clAPEDataProvider();
 
 	virtual const sWaveDataFormat& GetWaveDataFormat() const override { return m_Format; }
 
@@ -28,12 +27,7 @@ public:
 	virtual void Seek( float Seconds ) override;
 
 private:
-	int DecodeFromFile( size_t Size, size_t BytesRead );
-
-	static size_t oggReadFunc( void* Ptr, size_t Size, size_t NumMemBlocks, void* UserData );
-	static int oggSeekFunc( void* UserData, ogg_int64_t Offset, int Whence );
-	static int oggCloseFunc( void* UserData );
-	static long oggTellFunc( void* UserData );
+	int DecodeFromFile( size_t Size );
 
 private:
 	std::shared_ptr<clBlob> m_Data;
@@ -44,8 +38,9 @@ private:
 
 	bool m_IsEndOfStream;
 
-	// Vorbis stuff
-	OggVorbis_File m_VorbisFile;
-	ogg_int64_t m_RawPosition;
-	int m_CurrentSection;
+	// APE stuff
+	int m_APEErrorCode;
+	IAPEDecompress* m_APEDecompress;
+	std::shared_ptr<CIO> m_APEIO;
+	size_t m_APEBlockSize;
 };

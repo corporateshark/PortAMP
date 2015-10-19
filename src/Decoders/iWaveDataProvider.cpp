@@ -7,6 +7,7 @@
 #include "OGG/OGGDataProvider.h"
 #include "ModPlug/ModPlugDataProvider.h"
 #include "FLAC/FLACDataProvider.h"
+#include "APE/APEDataProvider.h"
 #include "Utils.h"
 
 const char* GetFileExt( const char* FileName )
@@ -75,6 +76,7 @@ std::shared_ptr<iWaveDataProvider> CreateWaveDataProvider( const char* FileName,
 	if ( strcmpi( Ext, "mp3" ) == 0 ) return std::make_shared<clMP3DataProvider>( Data );
 	if ( strcmpi( Ext, "ogg" ) == 0 ) return std::make_shared<clOGGDataProvider>( Data );
 	if ( strcmpi( Ext, "flac" ) == 0 ) return std::make_shared<clFLACDataProvider>( Data );
+	if ( strcmpi( Ext, "ape" ) == 0 ) return std::make_shared<clAPEDataProvider>( Data );
 	if ( IsModule( Ext ) ) return std::make_shared<clModPlugDataProvider>( Data );
 
 	auto MP3Blob = TryMP3InsideWAV( Data );

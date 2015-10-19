@@ -25,8 +25,8 @@ public:
 	virtual size_t GetWaveDataSize() const override;
 
 	virtual size_t StreamWaveData( size_t Size ) override;
-	virtual bool IsStreaming() const { return true; }
-	virtual bool IsEndOfStream() const { return m_IsEndOfStream; }
+	virtual bool IsStreaming() const override { return true; }
+	virtual bool IsEndOfStream() const override { return m_IsEndOfStream; }
 	virtual void Seek( float Seconds ) override;
 
 private:
