@@ -36,7 +36,8 @@ public:
 	{
 		if ( pBuffer )
 		{
-			size_t NumActualBytes = std::min( m_Data->GetDataSize() - m_Position, nBytesToRead );
+			size_t BytesLeft = m_Data->GetDataSize() - m_Position;
+			size_t NumActualBytes = std::min( BytesLeft, static_cast<size_t>( nBytesToRead ) );
 			memcpy( pBuffer, m_Data->GetDataPtr()+m_Position, NumActualBytes );
 			if ( pBytesRead ) *pBytesRead = NumActualBytes;
 			m_Position += NumActualBytes;
