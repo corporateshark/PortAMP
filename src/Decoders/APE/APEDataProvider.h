@@ -42,6 +42,7 @@ private:
 
 	// APE stuff
 	int m_APEErrorCode;
-	std::shared_ptr<IAPEDecompress> m_APEDecompress;
+	IAPEDecompress* m_APEDecompress;
 	std::shared_ptr<CIO> m_APEIO;
+	size_t m_APEBlockSize;
 };
