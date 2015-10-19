@@ -39,8 +39,10 @@ typedef unsigned char       UCHAR;
 typedef const wchar_t *     LPCWSTR;
 
 #define ZeroMemory(POINTER, BYTES) memset(POINTER, 0, BYTES);
-#define max(a,b)    (((a) > (b)) ? (a) : (b))
-#define min(a,b)    (((a) < (b)) ? (a) : (b))
+#if !defined( NOMINMAX )
+#	define max(a,b)    (((a) > (b)) ? (a) : (b))
+#	define min(a,b)    (((a) < (b)) ? (a) : (b))
+#endif // NOMINMAX
 
 #define __stdcall
 #define CALLBACK
