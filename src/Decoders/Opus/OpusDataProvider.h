@@ -40,4 +40,5 @@ private:
 
 	// Opus stuff
 	OpusDecoder* m_OpusDecoder;
+	size_t m_Position;
 };
