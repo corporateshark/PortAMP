@@ -61,6 +61,7 @@ if(MSVC)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/flac-1.3.1 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	set(CMAKE_C_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 	target_link_libraries(portamp
@@ -71,6 +72,7 @@ if(MSVC)
 		id3v2
 		libflac
 		monkeyaudio
+		libopus
 	)
 elseif(APPLE)
 	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
@@ -79,6 +81,7 @@ elseif(APPLE)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/flac-1.3.1 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 	include(CMakeLists_Apple.txt)
 	target_link_libraries(portamp
@@ -89,6 +92,7 @@ elseif(APPLE)
 		libflac
 		id3v2
 		monkeyaudio
+		libopus
 		dl
 		pthread
 	)
@@ -97,6 +101,7 @@ elseif(APPLE)
 else()
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 	target_link_libraries(portamp
 		minimp3
@@ -107,6 +112,7 @@ else()
 		FLAC
 		id3v2
 		monkeyaudio
+		opus
 		pthread
 		dl
 		openal
