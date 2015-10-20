@@ -10,7 +10,7 @@
 #include "Utils.h"
 #include "Playlist.h"
 
-const char* PORTAMP_VERSION = "1.0.0";
+const char* PORTAMP_VERSION = "1.1.0";
 
 sConfig g_Config;
 clPlaylist g_Playlist;
@@ -34,6 +34,7 @@ void PrintBanner()
 {
 	printf( "PortAMP version %s (%s)\n", PORTAMP_VERSION, __DATE__ " " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS );
 	printf( "Copyright (C) 2015 Sergey Kosarevsky\n" );
+	printf( "portamp@linderdaum.com\n" );
 	printf( "https://github.com/corporateshark/PortAMP\n" );
 	printf( "\n" );
 	printf( "portamp <filename1> [<filename2> ...] [--loop] [--wav-modplug] [--verbose]\n" );
