@@ -28,6 +28,7 @@ Features:
 * OGG (using libogg/libvorbis https://xiph.org/downloads)
 * FLAC (using libflac https://xiph.org/downloads)
 * APE (using Monkey's Audio https://github.com/cristiklein/monkeys-audio)
+* OPUS (using libopus https://www.opus-codec.org/downloads and libopusfile http://git.xiph.org/?p=opusfile.git)
 * Modules: MOD, S3M, XM, IT, 669, AMF, AMS, DBM, DMF, DSM, FAR, MDL, MED, MTM, OKT, PTM, STM, ULT, UMX, MT2, PSM (using libmodplug http://modplug-xmms.sourceforge.net)
 
 =============================
