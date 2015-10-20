@@ -7,7 +7,7 @@
 
 class clBlob;
 
-class OpusDecoder;
+struct OggOpusFile;
 
 /// Opus decoder
 class clOpusDataProvider: public iWaveDataProvider
@@ -27,7 +27,7 @@ public:
 	virtual void Seek( float Seconds ) override;
 
 private:
-	int DecodeFromFile( size_t Size );
+	int DecodeFromFile( size_t Size, size_t BytesRead );
 
 private:
 	std::shared_ptr<clBlob> m_Data;
@@ -39,6 +39,5 @@ private:
 	bool m_IsEndOfStream;
 
 	// Opus stuff
-	OpusDecoder* m_OpusDecoder;
-	size_t m_Position;
+	OggOpusFile* m_OpusFile;
 };
