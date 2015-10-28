@@ -35,6 +35,8 @@ struct PACKED_STRUCT(1) sWAVHeader
 
 std::shared_ptr<clBlob> TryMP3InsideWAV( const std::shared_ptr<clBlob>& Data )
 {
+	if (!Data || Data->GetDataSize() < sizeof(sWAVHeader)) return std::shared_ptr<clBlob>();
+
 	const sWAVHeader* Header = reinterpret_cast<const sWAVHeader*>( Data->GetDataPtr() );
 
 	const uint16_t FORMAT_MP3 = 0x0055;

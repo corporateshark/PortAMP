@@ -10,6 +10,8 @@
 #include "Utils.h"
 #include "Playlist.h"
 
+#define ENABLE_TEST	0
+
 const char* PORTAMP_VERSION = "1.1.0";
 
 sConfig g_Config;
@@ -43,15 +45,19 @@ void PrintBanner()
 
 int main( int argc, char* argv[] )
 {
+#if !ENABLE_TEST
 	if ( argc <= 1 )
 	{
 		PrintBanner();
 		return 0;
 	}
+#endif
 
 	g_Config = ReadConfigFromCommandLine( argc, argv );
 
+#if ENABLE_TEST
 	if ( g_Playlist.IsEmpty() ) g_Playlist.EnqueueTrack( "test.ogg" );
+#endif
 
 	auto AudioSubsystem = CreateAudioSubsystem_OpenAL();
 
@@ -68,6 +74,7 @@ int main( int argc, char* argv[] )
 		auto FileName = g_Playlist.GetAndPopNextTrack( g_Config.m_Loop );
 		auto DataBlob = ReadFileAsBlob( FileName.c_str() );
 		auto Provider = CreateWaveDataProvider( FileName.c_str(), DataBlob );
+		if (!Provider || !Provider->GetWaveDataSize()) continue;
 		Source->BindDataProvider( Provider );
 		Source->Play();
 
