@@ -12,7 +12,7 @@
 
 #define ENABLE_TEST	0
 
-const char* PORTAMP_VERSION = "1.1.0";
+const char* PORTAMP_VERSION = "1.1.1";
 
 sConfig g_Config;
 clPlaylist g_Playlist;
@@ -73,8 +73,11 @@ int main( int argc, char* argv[] )
 	{
 		auto FileName = g_Playlist.GetAndPopNextTrack( g_Config.m_Loop );
 		auto DataBlob = ReadFileAsBlob( FileName.c_str() );
+		if (!DataBlob || !DataBlob->GetDataSize()) continue;
+
 		auto Provider = CreateWaveDataProvider( FileName.c_str(), DataBlob );
-		if (!Provider || !Provider->GetWaveDataSize()) continue;
+		if (!Provider) continue;
+		
 		Source->BindDataProvider( Provider );
 		Source->Play();
 
