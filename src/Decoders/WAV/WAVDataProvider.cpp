@@ -130,7 +130,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				printf( "Samples/S   = %i\n", Header->SampleRate );
 				printf( "Bits/Sample = %i\n", Header->nBitsperSample );
 
-				printf( "m_DataSize = %zu\n\n", m_DataSize );
+				printf( "m_DataSize = %lu\n\n", static_cast<unsigned long>(m_DataSize) );
 			}
 
 		}
