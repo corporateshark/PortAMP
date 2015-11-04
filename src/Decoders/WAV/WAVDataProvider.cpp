@@ -84,6 +84,14 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 		bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
 		bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
 
+		if ( IsRIFF && IsWAVE && !IsPCM && IsVerbose() )
+		{
+			printf( "Channels       : %i\n", Header->Channels );
+			printf( "Sample rate    : %i\n", Header->SampleRate );
+			printf( "Bits per sample: %i\n", Header->nBitsperSample );
+			printf( "Format tag     : %x\n", Header->FormatTag );
+		}
+
 		// can only handle uncompressed .WAV files
 		if ( IsRIFF && IsWAVE && (IsPCM|IsFloat) )
 		{
