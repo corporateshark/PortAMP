@@ -114,9 +114,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 		bool IsPCM   = Header->FormatTag == FORMAT_PCM;
 		bool IsExtFormat = Header->FormatTag == FORMAT_EXT;
-		bool IsFloat =
-			Header->FormatTag == FORMAT_FLOAT ||
-			( IsExtFormat && ( (Header->nBitsperSample==32) || (Header->nBitsperSample == 64) ) );
+		bool IsFloat = Header->FormatTag == FORMAT_FLOAT;
 		bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
 		bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
 
@@ -138,7 +136,16 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			const size_t HeaderSize = sizeof(sWAVHeader);
 			const size_t ExtraParamSize = IsPCM ? 0 : Header->cbSize;
 			const size_t ChunkHeaderSize = sizeof(sWAVChunkHeader);
-		
+
+			if ( IsExtFormat )
+			{
+				// http://www-mmsp.ece.mcgill.ca/documents/audioformats/wave/wave.html
+				uint16_t SubFormatTag = *reinterpret_cast<const uint16_t*>(Data->GetDataPtr() + HeaderSize + 6);
+
+				if ( SubFormatTag == FORMAT_PCM ) IsFloat = false;
+				if ( SubFormatTag == FORMAT_FLOAT ) IsFloat = true;
+			}
+
 			size_t Offset = HeaderSize + ExtraParamSize;;
 
 			if ( IsPCM ) Offset -= sizeof(Header->cbSize);
