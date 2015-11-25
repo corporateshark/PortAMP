@@ -72,6 +72,22 @@ template <typename T> void ConvertClamp_IEEEToInt16( const T* Src, int16_t* Dst,
 	}
 }
 
+void ConvertClamp_Int24ToInt16(const uint8_t* Src, int16_t* Dst, size_t NumBytes)
+{
+	const uint8_t* End = Src + NumBytes;
+
+	while (Src < End)
+	{
+		uint8_t b0 = *Src++;
+		uint8_t b1 = *Src++;
+		uint8_t b2 = *Src++;
+		int v = (((b2 << 8) | b1) << 8) | b0;
+
+		if (v & 0x800000) v |= ~0xFFFFFF;
+		*Dst++ = (v << 8) & 0xFFFF;
+	}
+}
+
 void ConvertClamp_Int32ToInt16(const int32_t* Src, int16_t* Dst, size_t NumInts)
 {
 	const int32_t* End = Src + NumInts;
@@ -98,7 +114,9 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 		bool IsPCM   = Header->FormatTag == FORMAT_PCM;
 		bool IsExtFormat = Header->FormatTag == FORMAT_EXT;
-		bool IsFloat = Header->FormatTag == FORMAT_FLOAT;
+		bool IsFloat =
+			Header->FormatTag == FORMAT_FLOAT ||
+			( IsExtFormat && ( (Header->nBitsperSample==32) || (Header->nBitsperSample == 64) ) );
 		bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
 		bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
 
@@ -125,9 +143,25 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 			if ( IsPCM ) Offset -= sizeof(Header->cbSize);
 
-			const sWAVChunkHeader* ChunkHeader = reinterpret_cast<const sWAVChunkHeader*>( Data->GetDataPtr() + Offset );
+			const sWAVChunkHeader* ChunkHeader = nullptr;
 
-			m_DataSize = ChunkHeader->Size;
+			for (;;)
+			{
+				const sWAVChunkHeader* LocalChunkHeader = reinterpret_cast<const sWAVChunkHeader*>( Data->GetDataPtr() + Offset );
+
+				if ( memcmp(LocalChunkHeader->ID, "data", 4) == 0 )
+				{
+					ChunkHeader = LocalChunkHeader;
+					break;
+				}
+				else if ( memcmp(LocalChunkHeader->ID, "fact", 4) == 0 )
+				{
+					Offset += ChunkHeaderSize;
+					Offset += LocalChunkHeader->Size;
+				}
+			}
+
+			m_DataSize = ChunkHeader ? ChunkHeader->Size : 0;
 
  			if ( IsFloat )
 			{
@@ -155,6 +189,20 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				}
 
 				m_Data = std::make_shared<clBlob>( NewData );
+				m_Format.m_BitsPerSample = 16;
+			}
+			else if ( Header->nBitsperSample == 24 )
+			{
+				// replace the blob and convert data to 16-bit
+				std::vector<uint8_t> NewData;
+				NewData.resize(m_Data->GetDataSize());
+				int16_t* Dst = reinterpret_cast<int16_t*>(NewData.data() + sizeof(sWAVHeader));
+
+				const uint8_t* Src = reinterpret_cast<const uint8_t*>(m_Data->GetDataPtr() + Offset + sizeof(ChunkHeader));
+				ConvertClamp_Int24ToInt16(Src, Dst, m_DataSize);
+				m_DataSize = m_DataSize / 3 * 2;
+
+				m_Data = std::make_shared<clBlob>(NewData);
 				m_Format.m_BitsPerSample = 16;
 			}
 			else if ( Header->nBitsperSample == 32 )
