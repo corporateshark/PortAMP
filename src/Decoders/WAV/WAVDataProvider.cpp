@@ -26,8 +26,13 @@ struct PACKED_STRUCT(1) sWAVHeader
 	uint32_t AvgBytesPerSec;
 	uint16_t nBlockAlign;
 	uint16_t nBitsperSample;
-	uint8_t  Reserved[4];
-	uint32_t DataSize;
+	uint16_t cbSize;
+};
+
+struct PACKED_STRUCT(1) sWAVChunkHeader
+{
+	uint8_t  ID[4];	// "data"
+	uint32_t Size;
 };
 #pragma pack(pop)
 
@@ -67,6 +72,17 @@ template <typename T> void ConvertClamp_IEEEToInt16( const T* Src, int16_t* Dst,
 	}
 }
 
+void ConvertClamp_Int32ToInt16(const int32_t* Src, int16_t* Dst, size_t NumInts)
+{
+	const int32_t* End = Src + NumInts;
+
+	while (Src < End)
+	{
+		int32_t v = *Src++;
+		*Dst++ = (int16_t((v >> 16) & 0xFFFF) + (int16_t(v & 0xFFFF) << 16)) & 0xFFFF;
+	}
+}
+
 clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
 , m_DataSize( Data ? Data->GetDataSize() : 0 )
@@ -78,8 +94,10 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 		const uint16_t FORMAT_PCM   = 0x0001;
 		const uint16_t FORMAT_FLOAT = 0x0003;
+		const uint16_t FORMAT_EXT   = 0xFFFE;
 
 		bool IsPCM   = Header->FormatTag == FORMAT_PCM;
+		bool IsExtFormat = Header->FormatTag == FORMAT_EXT;
 		bool IsFloat = Header->FormatTag == FORMAT_FLOAT;
 		bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
 		bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
@@ -93,15 +111,25 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 		}
 
 		// can only handle uncompressed .WAV files
-		if ( IsRIFF && IsWAVE && (IsPCM|IsFloat) )
+		if ( IsRIFF && IsWAVE && (IsPCM|IsFloat|IsExtFormat) )
 		{
 			m_Format.m_NumChannels      = Header->Channels;
 			m_Format.m_SamplesPerSecond = Header->SampleRate;
 			m_Format.m_BitsPerSample    = Header->nBitsperSample;
 
-			m_DataSize = std::min( static_cast<size_t>(Header->DataSize), Data->GetDataSize() - sizeof(sWAVHeader) );
+			const size_t HeaderSize = sizeof(sWAVHeader);
+			const size_t ExtraParamSize = IsPCM ? 0 : Header->cbSize;
+			const size_t ChunkHeaderSize = sizeof(sWAVChunkHeader);
+		
+			size_t Offset = HeaderSize + ExtraParamSize;;
 
-			if ( IsFloat )
+			if ( IsPCM ) Offset -= sizeof(Header->cbSize);
+
+			const sWAVChunkHeader* ChunkHeader = reinterpret_cast<const sWAVChunkHeader*>( Data->GetDataPtr() + Offset );
+
+			m_DataSize = ChunkHeader->Size;
+
+ 			if ( IsFloat )
 			{
 				// replace the blob and convert data to 16-bit
 				std::vector<uint8_t> NewData;
@@ -110,15 +138,15 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 				if ( Header->nBitsperSample == 32 )
 				{
-					const float* Src = reinterpret_cast<const float*>( m_Data->GetDataPtr()+sizeof(sWAVHeader)+2 );
+					const float* Src = reinterpret_cast<const float*>( m_Data->GetDataPtr()+Offset+sizeof(ChunkHeader) );
 					ConvertClamp_IEEEToInt16<float>( Src, Dst, m_DataSize / 4 );
-					m_DataSize = m_DataSize/2 - 3;
+					m_DataSize = m_DataSize/2;
 				}
 				else if ( Header->nBitsperSample == 64 )
 				{
-					const double* Src = reinterpret_cast<const double*>( m_Data->GetDataPtr()+sizeof(sWAVHeader)+2 );
+					const double* Src = reinterpret_cast<const double*>( m_Data->GetDataPtr()+Offset+sizeof(ChunkHeader)+4);
 					ConvertClamp_IEEEToInt16<double>( Src, Dst, m_DataSize / 8 );
-					m_DataSize = m_DataSize/4 - 3;
+					m_DataSize = m_DataSize/4;
 				}
 				else 
 				{
@@ -127,6 +155,20 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				}
 
 				m_Data = std::make_shared<clBlob>( NewData );
+				m_Format.m_BitsPerSample = 16;
+			}
+			else if ( Header->nBitsperSample == 32 )
+			{
+				// replace the blob and convert data to 16-bit
+				std::vector<uint8_t> NewData;
+				NewData.resize(m_Data->GetDataSize());
+				int16_t* Dst = reinterpret_cast<int16_t*>(NewData.data() + sizeof(sWAVHeader));
+
+				const int32_t* Src = reinterpret_cast<const int32_t*>(m_Data->GetDataPtr() + Offset + sizeof(ChunkHeader));
+				ConvertClamp_Int32ToInt16(Src, Dst, m_DataSize / 4);
+				m_DataSize = m_DataSize / 2;
+
+				m_Data = std::make_shared<clBlob>(NewData);
 				m_Format.m_BitsPerSample = 16;
 			}
 

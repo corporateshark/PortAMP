@@ -57,6 +57,7 @@ int main( int argc, char* argv[] )
 
 #if ENABLE_TEST
 	if ( g_Playlist.IsEmpty() ) g_Playlist.EnqueueTrack( "test.ogg" );
+	g_Config.m_Verbose = true;
 #endif
 
 	auto AudioSubsystem = CreateAudioSubsystem_OpenAL();
