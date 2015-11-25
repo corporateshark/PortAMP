@@ -23,7 +23,7 @@ portamp <filename> [<filename2> ...] [--loop] [--wav-modplug] [--verbose]
 Features:
 ---------
 
-* WAV (mono or stereo uncompressed PCM with 8-bit, 16-bit, 32-bit float or 64-bit double format)
+* WAV (mono or stereo uncompressed PCM with 8-bit, 16-bit, 24-bit, 32-bit, 32-bit float or 64-bit double format)
 * MP3 (using the MiniMP3 library http://keyj.emphy.de/minimp3)
 * OGG (using libogg/libvorbis https://xiph.org/downloads)
 * FLAC (using libflac https://xiph.org/downloads)
