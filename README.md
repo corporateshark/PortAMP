@@ -1,7 +1,7 @@
 PortAMP
 =======
 
-Copyright (c) Sergey Kosarevsky, 2015
+Copyright (c) Sergey Kosarevsky, 2015-2016
 
 https://github.com/corporateshark/PortAMP
 

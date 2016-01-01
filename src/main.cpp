@@ -35,7 +35,7 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 void PrintBanner()
 {
 	printf( "PortAMP version %s (%s)\n", PORTAMP_VERSION, __DATE__ " " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS );
-	printf( "Copyright (C) 2015 Sergey Kosarevsky\n" );
+	printf( "Copyright (C) 2015-2016 Sergey Kosarevsky\n" );
 	printf( "portamp@linderdaum.com\n" );
 	printf( "https://github.com/corporateshark/PortAMP\n" );
 	printf( "\n" );
