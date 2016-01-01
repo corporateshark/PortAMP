@@ -100,30 +100,9 @@ void ConvertClamp_Int32ToInt16(const int32_t* Src, int16_t* Dst, size_t NumInts)
 	}
 }
 
-// http://wiki.multimedia.cx/index.php?title=IMA_ADPCM
-static int adpcm_index_table[16] =
+struct sADPCMDecoderStatus_MS
 {
-	-1, -1, -1, -1, 2, 4, 6, 8,
-	-1, -1, -1, -1, 2, 4, 6, 8
-};
-
-// http://wiki.multimedia.cx/index.php?title=IMA_ADPCM
-int adpcm_step_table[89] =
-{
-	7, 8, 9, 10, 11, 12, 13, 14, 16, 17,
-	19, 21, 23, 25, 28, 31, 34, 37, 41, 45,
-	50, 55, 60, 66, 73, 80, 88, 97, 107, 118,
-	130, 143, 157, 173, 190, 209, 230, 253, 279, 307,
-	337, 371, 408, 449, 494, 544, 598, 658, 724, 796,
-	876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066,
-	2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358,
-	5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899,
-	15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
-};
-
-struct sADPCMDecoderStatus
-{
-	sADPCMDecoderStatus()
+	sADPCMDecoderStatus_MS()
 	: m_Predictor( 0 )
 	, m_Sample1( 0 )
 	, m_Sample2( 0 )
@@ -160,7 +139,7 @@ int Clamp( int i, int a, int b )
 	return i;
 }
 
-static int16_t ConvertNibble_MSADPCM( sADPCMDecoderStatus* Status, int Nibble )
+static int16_t ConvertNibble_MSADPCM( sADPCMDecoderStatus_MS* Status, int Nibble )
 {
 	const int SignedNibble = Nibble - ( Nibble & 0x08 ? 0x10 : 0 );
 
@@ -185,8 +164,8 @@ int16_t* Decode_MSADPCM_Block( const uint8_t* Src, int16_t* Dst, size_t NumBytes
 {
 	const uint8_t* End = Src + NumBytes;
 
-	sADPCMDecoderStatus StatusLeft;
-	sADPCMDecoderStatus StatusRight;
+	sADPCMDecoderStatus_MS StatusLeft;
+	sADPCMDecoderStatus_MS StatusRight;
 
 	// read the block header
 	const int PredictorL = Clamp( *Src++, 0, 6 );
@@ -231,6 +210,112 @@ void ConvertClamp_MSADPCMToInt16( const uint8_t* Src, int16_t* Dst, size_t NumBy
 	}
 }
 
+struct sADPCMDecoderStatus_IMA
+{
+	sADPCMDecoderStatus_IMA()
+	: m_Predictor( 0 )
+	, m_StepIndex( 0 )
+	{}
+
+	int m_Predictor;
+	int m_StepIndex;
+};
+
+// http://wiki.multimedia.cx/index.php?title=IMA_ADPCM
+static int adpcm_index_table[16] =
+{
+	-1, -1, -1, -1, 2, 4, 6, 8,
+	-1, -1, -1, -1, 2, 4, 6, 8
+};
+
+// http://wiki.multimedia.cx/index.php?title=IMA_ADPCM
+int adpcm_step_table[89] =
+{
+	7, 8, 9, 10, 11, 12, 13, 14, 16, 17,
+	19, 21, 23, 25, 28, 31, 34, 37, 41, 45,
+	50, 55, 60, 66, 73, 80, 88, 97, 107, 118,
+	130, 143, 157, 173, 190, 209, 230, 253, 279, 307,
+	337, 371, 408, 449, 494, 544, 598, 658, 724, 796,
+	876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066,
+	2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358,
+	5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899,
+	15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
+};
+
+uint16_t ConvertNibble_IMAADPCM( sADPCMDecoderStatus_IMA* Status, int Nibble )
+{
+	int Diff = adpcm_step_table[ Status->m_StepIndex ] >> 3;
+	if ( Nibble & 0x04 ) Diff += adpcm_step_table[ Status->m_StepIndex ];
+	if ( Nibble & 0x02 ) Diff += adpcm_step_table[ Status->m_StepIndex ] >> 1;
+	if ( Nibble & 0x01 ) Diff += adpcm_step_table[ Status->m_StepIndex ] >> 2;
+	if ( Nibble & 0x08 ) Status->m_Predictor -= Diff; else Status->m_Predictor += Diff;
+	Status->m_Predictor = Clamp( Status->m_Predictor, -32768, 32767 );
+	Status->m_StepIndex = Clamp( Status->m_StepIndex + adpcm_index_table[Nibble], 0, 88 );
+
+	return Status->m_Predictor & 0xFFFF;
+}
+
+int16_t* Decode_IMAADPCM_Block( const uint8_t* Src, int16_t* Dst, size_t NumBytes, bool IsStereo )
+{
+	const uint8_t* End = Src + NumBytes;
+
+	sADPCMDecoderStatus_IMA StatusLeft;
+	sADPCMDecoderStatus_IMA StatusRight;
+
+	GetWord( StatusLeft.m_Predictor );
+	StatusLeft.m_StepIndex = Clamp( *Src++, 0, 88 );
+	Src++; // skip 1 byte
+	if ( IsStereo )
+	{
+		GetWord( StatusRight.m_Predictor );
+		StatusRight.m_StepIndex = Clamp( *Src++, 0, 88 );
+		Src++; // skip 1 byte
+	}
+
+	if ( IsStereo )
+	{
+		while ( Src < End )
+		{
+			for ( int i = 0; i < 4; i++ )
+			{
+				Dst[i * 4 + 0] = ConvertNibble_IMAADPCM( &StatusLeft, Src[i] & 0x0f );
+				Dst[i * 4 + 2] = ConvertNibble_IMAADPCM( &StatusLeft, Src[i] >> 4 );
+			}
+			Src += 4;
+
+			for ( int i = 0; i < 4; i++ )
+			{
+				Dst[i * 4 + 1] = ConvertNibble_IMAADPCM( &StatusRight, Src[i] & 0x0f );
+				Dst[i * 4 + 3] = ConvertNibble_IMAADPCM( &StatusRight, Src[i] >> 4 );
+			}
+			Src += 4;
+			Dst += 16;
+		}
+	}
+	else
+	{
+		while ( Src < End )
+		{
+			*Dst++ = ConvertNibble_IMAADPCM( &StatusLeft, *Src & 0x0f );
+			*Dst++ = ConvertNibble_IMAADPCM( &StatusLeft, *Src >> 4 );
+			Src++;
+		}
+	}
+
+	return Dst;
+}
+
+void ConvertClamp_IMAADPCMToInt16( const uint8_t* Src, int16_t* Dst, size_t NumBytes, int BlockAlign, bool IsStereo )
+{
+	const size_t NumBlocks = NumBytes / BlockAlign;
+
+	for ( size_t i = 0; i != NumBlocks; i++ )
+	{
+		Dst = Decode_IMAADPCM_Block( Src, Dst, BlockAlign, IsStereo );
+		Src += BlockAlign;
+	}
+}
+
 clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
 , m_DataSize( Data ? Data->GetDataSize() : 0 )
@@ -243,16 +328,18 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 		const uint16_t FORMAT_PCM   = 0x0001;
 		const uint16_t FORMAT_FLOAT = 0x0003;
 		const uint16_t FORMAT_EXT   = 0xFFFE;
-		const uint16_t FORMAT_MS_ADPCM = 0x0002;
+		const uint16_t FORMAT_ADPCM_MS  = 0x0002;
+		const uint16_t FORMAT_ADPCM_IMA = 0x0011;
 
-		bool IsPCM   = Header->FormatTag == FORMAT_PCM;
-		bool IsExtFormat = Header->FormatTag == FORMAT_EXT;
+		const bool IsPCM   = Header->FormatTag == FORMAT_PCM;
+		const bool IsExtFormat = Header->FormatTag == FORMAT_EXT;
 		bool IsFloat = Header->FormatTag == FORMAT_FLOAT;
-		bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
-		bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
-		bool IsMSADPCM = Header->FormatTag == FORMAT_MS_ADPCM;
+		const bool IsRIFF = memcmp( &Header->RIFF, "RIFF", 4 ) == 0;
+		const bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
+		const bool IsADPCM_MS = Header->FormatTag == FORMAT_ADPCM_MS;
+		const bool IsADPCM_IMA = Header->FormatTag == FORMAT_ADPCM_IMA;
 
-		if ( IsRIFF && IsWAVE && ( !IsPCM || IsMSADPCM ) && IsVerbose() )
+		if ( IsRIFF && IsWAVE && ( !IsPCM || IsADPCM_MS || IsADPCM_IMA ) && IsVerbose() )
 		{
 			printf( "Channels       : %i\n", Header->Channels );
 			printf( "Sample rate    : %i\n", Header->SampleRate );
@@ -260,7 +347,9 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			printf( "Format tag     : %x\n", Header->FormatTag );
 		}
 
-		if ( IsRIFF && IsWAVE && (IsPCM|IsFloat|IsExtFormat|IsMSADPCM) )
+		const bool IsSupportedCodec = IsPCM | IsFloat | IsExtFormat | IsADPCM_MS || IsADPCM_IMA;
+
+		if ( IsRIFF && IsWAVE && IsSupportedCodec )
 		{
 			m_Format.m_NumChannels      = Header->Channels;
 			m_Format.m_SamplesPerSecond = Header->SampleRate;
@@ -306,13 +395,24 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 			m_DataSize = ChunkHeader ? ChunkHeader->Size : 0;
 
-			if ( IsMSADPCM )
+			if ( IsADPCM_MS )
 			{
 				std::vector<uint8_t> NewData;
 				NewData.resize( m_DataSize * 4 );
 				int16_t* Dst = reinterpret_cast<int16_t*>( NewData.data() );
 				const uint8_t* Src = reinterpret_cast<const uint8_t*>( m_Data->GetDataPtr( ) + Offset + sizeof( ChunkHeader ) + 4 );
 				ConvertClamp_MSADPCMToInt16( Src, Dst, m_DataSize, Header->nBlockAlign, Header->Channels == 2 );
+				m_Data = std::make_shared<clBlob>( NewData );
+				m_Format.m_BitsPerSample = 16;
+				m_DataSize = m_DataSize * 4;
+			}
+			if ( IsADPCM_IMA )
+			{
+				std::vector<uint8_t> NewData;
+				NewData.resize( m_DataSize * 4 );
+				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() );
+				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + sizeof( ChunkHeader )+4 );
+				ConvertClamp_IMAADPCMToInt16( Src, Dst, m_DataSize, Header->nBlockAlign, Header->Channels == 2 );
 				m_Data = std::make_shared<clBlob>( NewData );
 				m_Format.m_BitsPerSample = 16;
 				m_DataSize = m_DataSize * 4;
