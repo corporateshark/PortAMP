@@ -316,6 +316,31 @@ void ConvertClamp_IMAADPCMToInt16( const uint8_t* Src, int16_t* Dst, size_t NumB
 	}
 }
 
+int16_t MuLaw_Decode( int8_t N )
+{
+	uint8_t Sign = 0;
+	N = ~N;
+	if ( N & 0x80 )
+	{
+		N &= ~( 1 << 7 );
+		Sign = -1;
+	}
+	const uint16_t Shift = 33;
+	uint8_t Position = ( ( N & 0xF0 ) >> 4 ) + 5;
+	int16_t Decoded = ( ( 1 << Position ) | ( ( N & 0x0F ) << ( Position - 4 ) ) | ( 1 << ( Position - 5 ) ) ) - Shift;
+	return Sign ? -Decoded : Decoded;
+}
+
+void ConvertClamp_MuLawToInt16( const uint8_t* Src, int16_t* Dst, size_t NumBytes )
+{
+	const uint8_t* End = Src + NumBytes;
+
+	while ( Src < End )
+	{
+		*Dst++ = MuLaw_Decode( *Src++ );
+	}
+}
+
 clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
 , m_DataSize( Data ? Data->GetDataSize() : 0 )
@@ -330,6 +355,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 		const uint16_t FORMAT_EXT   = 0xFFFE;
 		const uint16_t FORMAT_ADPCM_MS  = 0x0002;
 		const uint16_t FORMAT_ADPCM_IMA = 0x0011;
+		const uint16_t FORMAT_MULAW = 0x0007;
 
 		const bool IsPCM   = Header->FormatTag == FORMAT_PCM;
 		const bool IsExtFormat = Header->FormatTag == FORMAT_EXT;
@@ -338,8 +364,9 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 		const bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
 		const bool IsADPCM_MS = Header->FormatTag == FORMAT_ADPCM_MS;
 		const bool IsADPCM_IMA = Header->FormatTag == FORMAT_ADPCM_IMA;
+		const bool IsMuLaw = Header->FormatTag == FORMAT_MULAW;
 
-		if ( IsRIFF && IsWAVE && ( !IsPCM || IsADPCM_MS || IsADPCM_IMA ) && IsVerbose() )
+		if ( IsRIFF && IsWAVE && ( !IsPCM || IsADPCM_MS || IsADPCM_IMA || IsMuLaw ) && IsVerbose() )
 		{
 			printf( "Channels       : %i\n", Header->Channels );
 			printf( "Sample rate    : %i\n", Header->SampleRate );
@@ -347,7 +374,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			printf( "Format tag     : %x\n", Header->FormatTag );
 		}
 
-		const bool IsSupportedCodec = IsPCM | IsFloat | IsExtFormat | IsADPCM_MS || IsADPCM_IMA;
+		const bool IsSupportedCodec = IsPCM || IsFloat || IsExtFormat || IsADPCM_MS || IsADPCM_IMA || IsMuLaw;
 
 		if ( IsRIFF && IsWAVE && IsSupportedCodec )
 		{
@@ -395,6 +422,17 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 			m_DataSize = ChunkHeader ? ChunkHeader->Size : 0;
 
+			if ( IsMuLaw )
+			{
+				std::vector<uint8_t> NewData;
+				NewData.resize( m_DataSize * 2 );
+				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() );
+				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + sizeof( ChunkHeader )+4 );
+				ConvertClamp_MuLawToInt16( Src, Dst, m_DataSize );
+				m_Data = std::make_shared<clBlob>( NewData );
+				m_Format.m_BitsPerSample = 16;
+				m_DataSize = m_DataSize * 2;
+			}
 			if ( IsADPCM_MS )
 			{
 				std::vector<uint8_t> NewData;
