@@ -424,9 +424,14 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				if ( SubFormatTag == FORMAT_FLOAT ) IsFloat = true;
 			}
 
-			size_t Offset = HeaderSize + ExtraParamSize;;
+			size_t Offset = HeaderSize + ExtraParamSize;
 
-			if ( IsPCM ) Offset -= sizeof(Header->cbSize);
+			if ( IsPCM )
+			{
+				// http://soundfile.sapp.org/doc/WaveFormat/
+				const int Subchunk1Size = 16;
+				Offset += int( Header->SizeFmt ) - Subchunk1Size - sizeof( Header->cbSize );
+			}
 
 			const sWAVChunkHeader* ChunkHeader = nullptr;
 
@@ -446,6 +451,12 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				{
 					Offset += ChunkHeaderSize;
 					Offset += LocalChunkHeader->Size;
+				}
+				else
+				{
+					printf( "Unknown chunk ID: %c%c%c%c\n", LocalChunkHeader->ID[0], LocalChunkHeader->ID[1], LocalChunkHeader->ID[2], LocalChunkHeader->ID[3] );
+					m_DataSize = 0;
+					break;
 				}
 			}
 
@@ -559,7 +570,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				printf( "Channels    = %i\n", Header->Channels );
 				printf( "Samples/S   = %i\n", Header->SampleRate );
 				printf( "Bits/Sample = %i\n", Header->nBitsperSample );
-
+				printf( "Format tag  = %x\n", Header->FormatTag );
 				printf( "m_DataSize = %lu\n\n", static_cast<unsigned long>(m_DataSize) );
 			}
 
