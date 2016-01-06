@@ -469,8 +469,8 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			if ( IsALaw )
 			{
 				std::vector<uint8_t> NewData;
-				NewData.resize( m_DataSize * 2 );
-				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() );
+				NewData.resize( m_DataSize * 2 + sizeof(sWAVHeader) );
+				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() + sizeof(sWAVHeader) );
 				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + ChunkHeaderSize );
 				ConvertClamp_ALawToInt16( Src, Dst, m_DataSize );
 				m_Data = std::make_shared<clBlob>( NewData );
@@ -480,8 +480,8 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			else if ( IsMuLaw )
 			{
 				std::vector<uint8_t> NewData;
-				NewData.resize( m_DataSize * 2 );
-				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() );
+				NewData.resize( m_DataSize * 2 + sizeof(sWAVHeader) );
+				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() + sizeof(sWAVHeader) );
 				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + ChunkHeaderSize );
 				ConvertClamp_MuLawToInt16( Src, Dst, m_DataSize );
 				m_Data = std::make_shared<clBlob>( NewData );
@@ -491,8 +491,8 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			else if ( IsADPCM_MS )
 			{
 				std::vector<uint8_t> NewData;
-				NewData.resize( m_DataSize * 4 );
-				int16_t* Dst = reinterpret_cast<int16_t*>( NewData.data() );
+				NewData.resize( m_DataSize * 4 + sizeof(sWAVHeader) );
+				int16_t* Dst = reinterpret_cast<int16_t*>( NewData.data() + sizeof(sWAVHeader) );
 				const uint8_t* Src = reinterpret_cast<const uint8_t*>( m_Data->GetDataPtr( ) + Offset + ChunkHeaderSize );
 				ConvertClamp_MSADPCMToInt16( Src, Dst, m_DataSize, Header->nBlockAlign, Header->Channels == 2 );
 				m_Data = std::make_shared<clBlob>( NewData );
@@ -502,8 +502,8 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			else if ( IsADPCM_IMA )
 			{
 				std::vector<uint8_t> NewData;
-				NewData.resize( m_DataSize * 4 );
-				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() );
+				NewData.resize( m_DataSize * 4 + sizeof(sWAVHeader) );
+				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() + sizeof(sWAVHeader) );
 				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + ChunkHeaderSize );
 				ConvertClamp_IMAADPCMToInt16( Src, Dst, m_DataSize, Header->nBlockAlign, Header->Channels == 2 );
 				m_Data = std::make_shared<clBlob>( NewData );
@@ -515,7 +515,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				// replace the blob and convert data to 16-bit
 				std::vector<uint8_t> NewData;
 				NewData.resize( m_Data->GetDataSize() );
-				int16_t* Dst = reinterpret_cast<int16_t*>( NewData.data()+sizeof(sWAVHeader) );
+				int16_t* Dst = reinterpret_cast<int16_t*>( NewData.data() + sizeof(sWAVHeader) );
 
 				if ( Header->nBitsperSample == 32 )
 				{
