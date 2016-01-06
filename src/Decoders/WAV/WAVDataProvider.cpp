@@ -471,7 +471,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				std::vector<uint8_t> NewData;
 				NewData.resize( m_DataSize * 2 );
 				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() );
-				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + sizeof( ChunkHeader )+4 );
+				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + ChunkHeaderSize );
 				ConvertClamp_ALawToInt16( Src, Dst, m_DataSize );
 				m_Data = std::make_shared<clBlob>( NewData );
 				m_Format.m_BitsPerSample = 16;
@@ -482,7 +482,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				std::vector<uint8_t> NewData;
 				NewData.resize( m_DataSize * 2 );
 				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() );
-				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + sizeof( ChunkHeader )+4 );
+				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + ChunkHeaderSize );
 				ConvertClamp_MuLawToInt16( Src, Dst, m_DataSize );
 				m_Data = std::make_shared<clBlob>( NewData );
 				m_Format.m_BitsPerSample = 16;
@@ -493,7 +493,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				std::vector<uint8_t> NewData;
 				NewData.resize( m_DataSize * 4 );
 				int16_t* Dst = reinterpret_cast<int16_t*>( NewData.data() );
-				const uint8_t* Src = reinterpret_cast<const uint8_t*>( m_Data->GetDataPtr( ) + Offset + sizeof( ChunkHeader ) + 4 );
+				const uint8_t* Src = reinterpret_cast<const uint8_t*>( m_Data->GetDataPtr( ) + Offset + ChunkHeaderSize );
 				ConvertClamp_MSADPCMToInt16( Src, Dst, m_DataSize, Header->nBlockAlign, Header->Channels == 2 );
 				m_Data = std::make_shared<clBlob>( NewData );
 				m_Format.m_BitsPerSample = 16;
@@ -504,7 +504,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				std::vector<uint8_t> NewData;
 				NewData.resize( m_DataSize * 4 );
 				int16_t* Dst = reinterpret_cast< int16_t* >( NewData.data() );
-				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + sizeof( ChunkHeader )+4 );
+				const uint8_t* Src = reinterpret_cast< const uint8_t* >( m_Data->GetDataPtr() + Offset + ChunkHeaderSize );
 				ConvertClamp_IMAADPCMToInt16( Src, Dst, m_DataSize, Header->nBlockAlign, Header->Channels == 2 );
 				m_Data = std::make_shared<clBlob>( NewData );
 				m_Format.m_BitsPerSample = 16;
@@ -519,13 +519,13 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 
 				if ( Header->nBitsperSample == 32 )
 				{
-					const float* Src = reinterpret_cast<const float*>( m_Data->GetDataPtr()+Offset+sizeof(ChunkHeader) );
+					const float* Src = reinterpret_cast<const float*>( m_Data->GetDataPtr()+Offset+ChunkHeaderSize );
 					ConvertClamp_IEEEToInt16<float>( Src, Dst, m_DataSize / 4 );
 					m_DataSize = m_DataSize/2;
 				}
 				else if ( Header->nBitsperSample == 64 )
 				{
-					const double* Src = reinterpret_cast<const double*>( m_Data->GetDataPtr()+Offset+sizeof(ChunkHeader)+4);
+					const double* Src = reinterpret_cast<const double*>( m_Data->GetDataPtr()+Offset+ChunkHeaderSize );
 					ConvertClamp_IEEEToInt16<double>( Src, Dst, m_DataSize / 8 );
 					m_DataSize = m_DataSize/4;
 				}
@@ -545,7 +545,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				NewData.resize(m_Data->GetDataSize());
 				int16_t* Dst = reinterpret_cast<int16_t*>(NewData.data() + sizeof(sWAVHeader));
 
-				const uint8_t* Src = reinterpret_cast<const uint8_t*>(m_Data->GetDataPtr() + Offset + sizeof(ChunkHeader));
+				const uint8_t* Src = reinterpret_cast<const uint8_t*>(m_Data->GetDataPtr() + Offset + ChunkHeaderSize - 4);
 				ConvertClamp_Int24ToInt16(Src, Dst, m_DataSize);
 				m_DataSize = m_DataSize / 3 * 2;
 
@@ -559,7 +559,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 				NewData.resize(m_Data->GetDataSize());
 				int16_t* Dst = reinterpret_cast<int16_t*>(NewData.data() + sizeof(sWAVHeader));
 
-				const int32_t* Src = reinterpret_cast<const int32_t*>(m_Data->GetDataPtr() + Offset + sizeof(ChunkHeader));
+				const int32_t* Src = reinterpret_cast<const int32_t*>(m_Data->GetDataPtr() + Offset + ChunkHeaderSize);
 				ConvertClamp_Int32ToInt16(Src, Dst, m_DataSize / 4);
 				m_DataSize = m_DataSize / 2;
 
