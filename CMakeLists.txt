@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 project("PortAMP")
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_subdirectory(libs/minimp3 EXCLUDE_FROM_ALL)
 
@@ -69,6 +71,7 @@ if(MSVC)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 	set(CMAKE_C_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
+	add_definitions(-D_ALLOW_RTCc_IN_STL)
 	target_link_libraries(portamp
 		minimp3
 		libogg
@@ -129,3 +132,13 @@ else()
 	)
 	include_directories(/usr/local/include)
 endif()
+
+set_property(TARGET minimp3 PROPERTY FOLDER ThirdParty)
+set_property(TARGET libogg PROPERTY FOLDER ThirdParty)
+set_property(TARGET libvorbis PROPERTY FOLDER ThirdParty)
+set_property(TARGET libmodplug PROPERTY FOLDER ThirdParty)
+set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
+set_property(TARGET id3v2 PROPERTY FOLDER ThirdParty)
+set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
+set_property(TARGET libopus PROPERTY FOLDER ThirdParty)
+set_property(TARGET libopusfile PROPERTY FOLDER ThirdParty)
