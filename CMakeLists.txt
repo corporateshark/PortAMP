@@ -36,6 +36,7 @@ set(SRC_FILES
 	src/Decoders/FLAC/FLACDataProvider.cpp
 	src/Decoders/APE/APEDataProvider.cpp
 	src/Decoders/Opus/OpusDataProvider.cpp
+	src/Encoders/WAV/WAVDataEncoder.cpp
 	src/OpenAL/LAL.cpp
 	src/Utils.cpp
 )
@@ -51,6 +52,8 @@ set(HEADER_FILES
 	src/Decoders/FLAC/FLACDataProvider.h
 	src/Decoders/APE/APEDataProvider.h
 	src/Decoders/Opus/OpusDataProvider.h
+	src/Encoders/iWaveDataEncoder.h
+	src/Encoders/WAV/WAVDataEncoder.h
 	src/OpenAL/LAL.h
 	src/Utils.h
 )

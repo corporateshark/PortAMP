@@ -66,11 +66,13 @@ struct sConfig
 	: m_Loop( false )
 	, m_UseModPlugToDecodeWAV( false )
 	, m_Verbose( false )
+	, m_OutputFile()
 	{}
 
 	bool m_Loop;
 	bool m_UseModPlugToDecodeWAV;
 	bool m_Verbose;
+	std::string m_OutputFile;
 };
 
 std::shared_ptr<clBlob> ReadFileAsBlob( const char* FileName );

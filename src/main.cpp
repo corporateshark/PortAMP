@@ -7,6 +7,7 @@
 #include "AudioSubsystem_OpenAL.h"
 #include "Decoders/iWaveDataProvider.h"
 #include "Decoders/WAV/WAVDataProvider.h"
+#include "Encoders/iWaveDataEncoder.h"
 #include "Utils.h"
 #include "Playlist.h"
 
@@ -21,12 +22,27 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 {
 	sConfig Cfg;
 
-	for ( int i = 1; i < argc; i++ )
+	int i = 1;
+
+	while ( i < argc )
 	{
 		if ( strstr( argv[i], "--loop" ) == argv[i] ) Cfg.m_Loop = true;
 		else if ( strstr( argv[i], "--wav-modplug" ) == argv[i] ) Cfg.m_UseModPlugToDecodeWAV = true;
 		else if ( strstr( argv[i], "--verbose" ) == argv[i] ) Cfg.m_Verbose = true;
+		else if ( strstr (argv[i], "--output-file" ) == argv[i] )
+		{
+			if ( i+1 < argc )
+			{
+				Cfg.m_OutputFile = argv[++i];
+			}
+			else
+			{
+				printf( "Expected output file name for --output-file\n" );
+				exit(0);
+			}
+		}
 		else g_Playlist.EnqueueTrack( argv[i] );
+		i++;
 	}
 
 	return Cfg;
