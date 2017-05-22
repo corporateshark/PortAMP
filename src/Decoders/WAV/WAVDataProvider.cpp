@@ -451,6 +451,7 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 					memcmp( LocalChunkHeader->ID, "LIST", 4 ) == 0 ||
 					memcmp( LocalChunkHeader->ID, "PAD ", 4 ) == 0 ||
 					memcmp( LocalChunkHeader->ID, "JUNK", 4 ) == 0 ||
+					memcmp( LocalChunkHeader->ID, "junk", 4 ) == 0 ||
 					memcmp( LocalChunkHeader->ID, "INFO", 4 ) == 0 ||
 					memcmp( LocalChunkHeader->ID, "CSET", 4 ) == 0
 				)
