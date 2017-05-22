@@ -392,8 +392,8 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 		const bool IsWAVE = memcmp( &Header->WAVE, "WAVE", 4 ) == 0;
 		const bool IsADPCM_MS = Header->FormatTag == FORMAT_ADPCM_MS;
 		const bool IsADPCM_IMA = Header->FormatTag == FORMAT_ADPCM_IMA;
-		const bool IsALaw = Header->FormatTag == FORMAT_ALAW;
-		const bool IsMuLaw = Header->FormatTag == FORMAT_MULAW;
+		bool IsALaw = Header->FormatTag == FORMAT_ALAW;
+		bool IsMuLaw = Header->FormatTag == FORMAT_MULAW;
 
 		if ( IsRIFF && IsWAVE && ( !IsPCM || IsADPCM_MS || IsADPCM_IMA || IsALaw || IsMuLaw ) && IsVerbose() )
 		{
@@ -418,10 +418,12 @@ clWAVDataProvider::clWAVDataProvider( const std::shared_ptr<clBlob>& Data )
 			if ( IsExtFormat )
 			{
 				// http://www-mmsp.ece.mcgill.ca/documents/audioformats/wave/wave.html
-				uint16_t SubFormatTag = *reinterpret_cast<const uint16_t*>(Data->GetDataPtr() + HeaderSize + 6);
+				const uint16_t SubFormatTag = *reinterpret_cast<const uint16_t*>(Data->GetDataPtr() + HeaderSize + 6);
 
 				if ( SubFormatTag == FORMAT_PCM ) IsFloat = false;
 				if ( SubFormatTag == FORMAT_FLOAT ) IsFloat = true;
+				if ( SubFormatTag == FORMAT_ALAW ) IsALaw = true;
+				if ( SubFormatTag == FORMAT_MULAW ) IsMuLaw = true;
 			}
 
 			size_t Offset = HeaderSize + ExtraParamSize;
