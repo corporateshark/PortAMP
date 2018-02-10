@@ -13,7 +13,7 @@
 
 #define ENABLE_TEST	0
 
-const char* PORTAMP_VERSION = "1.1.2";
+const char* PORTAMP_VERSION = "1.1.3";
 
 sConfig g_Config;
 clPlaylist g_Playlist;
