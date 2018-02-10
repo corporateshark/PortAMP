@@ -1,7 +1,7 @@
 PortAMP
 =======
 
-Copyright (c) Sergey Kosarevsky, 2015-2016
+Copyright (c) Sergey Kosarevsky, 2015-2018
 
 https://github.com/corporateshark/PortAMP
 
@@ -24,7 +24,7 @@ Features:
 ---------
 
 * WAV (mono or stereo uncompressed PCM with 8-bit, 16-bit, 24-bit, 32-bit, 32-bit float or 64-bit double format, Microsoft ADPCM, IMA ADPCM, A-Law, Mu-Law - can decode everything from this page http://mauvecloud.net/sounds/index.html)
-* MP3 (using the MiniMP3 library http://keyj.emphy.de/minimp3)
+* MP3 (using the MiniMP3 library https://github.com/lieff/minimp3)
 * OGG (using libogg/libvorbis https://xiph.org/downloads)
 * FLAC (using libflac https://xiph.org/downloads)
 * APE (using Monkey's Audio https://github.com/cristiklein/monkeys-audio)
