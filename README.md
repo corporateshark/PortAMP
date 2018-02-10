@@ -33,12 +33,19 @@ Features:
 
 =============================
 
-UNIX build instructions:
+Clone:
 ------------------------
 
 ```
 git clone https://github.com/corporateshark/PortAMP
-cd PortAMP
+git submodule init
+git submodule update
+```
+
+UNIX build instructions:
+------------------------
+
+```
 mkdir build
 cd build
 cmake .. -G "Unix Makefiles"
@@ -49,11 +56,9 @@ Windows build instructions:
 ---------------------------
 
 ```
-git clone https://github.com/corporateshark/PortAMP
-cd PortAMP
 mkdir build
 cd build
-cmake .. -G "Visual Studio 12 2013"
+cmake .. -G "Visual Studio 15 2017"
 start PortAMP.sln
 ```
 
