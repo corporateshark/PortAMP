@@ -1,61 +1,57 @@
 #include "MP3DataProvider.h"
 #include "Utils.h"
-#include "id3v2lib.h"
 
-extern "C"
-{
+#define MINIMP3_IMPLEMENTATION 1
 #include "minimp3/minimp3.h"
-}
+
+struct DecoderData
+{
+	mp3dec_t m_Decoder;
+	mp3dec_frame_info_t m_Info;
+};
 
 clMP3DataProvider::clMP3DataProvider( const std::shared_ptr<clBlob>& Data )
 : m_Data( Data )
 , m_Format()
-, m_DecodingBuffer( MP3_MAX_SAMPLES_PER_FRAME * 16 )
+, m_DecodingBuffer( MINIMP3_MAX_SAMPLES_PER_FRAME * 16 )
 , m_BufferUsed( 0 )
 , m_StreamPos( 0 )
 , m_InitialStreamPos( 0 )
 , m_IsEndOfStream( false )
-, m_MP3Decoder( mp3_create() )
+, m_DecoderData(new DecoderData())
 {
+	mp3dec_init(&m_DecoderData->m_Decoder);
+
 	LoadMP3Info();
 
-	m_Format.m_NumChannels      = m_MP3Info.channels;
-	m_Format.m_SamplesPerSecond = m_MP3Info.sample_rate;
+	m_Format.m_NumChannels      = m_DecoderData->m_Info.channels;
+	m_Format.m_SamplesPerSecond = m_DecoderData->m_Info.hz;
 	m_Format.m_BitsPerSample    = 16;
 }
 
 clMP3DataProvider::~clMP3DataProvider()
 {
-	mp3_done( (mp3_decoder_t*)m_MP3Decoder );
-}
-
-void clMP3DataProvider::SkipTags()
-{
-	ID3v2_header* ID3TagHeader = get_tag_header_with_buffer(
-		reinterpret_cast<const char*>( m_Data->GetDataPtr() + m_StreamPos ),
-		static_cast<int>( m_Data->GetDataSize() - m_StreamPos )
-	);
-
-	if ( ID3TagHeader )
-	{
-		m_StreamPos += ID3TagHeader->tag_size;
-		delete_header( ID3TagHeader );
-	}
+	delete(m_DecoderData);
 }
 
 void clMP3DataProvider::LoadMP3Info()
 {
-	SkipTags();
+	int Samples = 0;
 
-	int byteCount = mp3_decode(
-		(mp3_decoder_t*)m_MP3Decoder,
-		m_Data ? const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ) : nullptr,
-		m_Data ? m_Data->GetDataSize() - m_StreamPos: 0,
-		(signed short*)m_DecodingBuffer.data(),
-		&m_MP3Info
-	);
+	do
+	{
+		Samples = mp3dec_decode_frame(
+			&m_DecoderData->m_Decoder,
+			m_Data ? const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ) : nullptr,
+			m_Data ? m_Data->GetDataSize() - m_StreamPos: 0,
+			(signed short*)m_DecodingBuffer.data(),
+			&m_DecoderData->m_Info
+		);
 
-	m_StreamPos += byteCount;
+		m_StreamPos += m_DecoderData->m_Info.frame_bytes;
+	}
+	while ( Samples == 0 && m_DecoderData->m_Info.frame_bytes > 0 );
+
 	m_InitialStreamPos = m_StreamPos;
 }
 
@@ -76,25 +72,30 @@ int clMP3DataProvider::DecodeFromFile( size_t BytesRead )
 		return 0;
 	}
 
-	size_t ByteCount = mp3_decode(
-		(mp3_decoder_t*)m_MP3Decoder,
-		const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ),
-		m_Data->GetDataSize() - m_StreamPos,
-		(signed short*)( m_DecodingBuffer.data() + BytesRead ),
-		&m_MP3Info
-	);
+	int Samples = 0;
 
-	m_Format.m_NumChannels      = m_MP3Info.channels;
-	m_Format.m_SamplesPerSecond = m_MP3Info.sample_rate;
+	do
+	{
+		Samples = mp3dec_decode_frame(
+			&m_DecoderData->m_Decoder,
+			const_cast<uint8_t*>( m_Data->GetDataPtr() + m_StreamPos ),
+			m_Data->GetDataSize() - m_StreamPos,
+			(signed short*)( m_DecodingBuffer.data() + BytesRead ),
+			&m_DecoderData->m_Info
+		);
+		m_StreamPos += m_DecoderData->m_Info.frame_bytes;
+	}
+	while ( Samples == 0 && m_DecoderData->m_Info.frame_bytes > 0 );
 
-	m_StreamPos += ByteCount;
+	m_Format.m_NumChannels      = m_DecoderData->m_Info.channels;
+	m_Format.m_SamplesPerSecond = m_DecoderData->m_Info.hz;
 
-	if ( m_StreamPos >= m_Data->GetDataSize() || !ByteCount )
+	if ( m_StreamPos >= m_Data->GetDataSize() || !Samples )
 	{
 		m_IsEndOfStream = true;
 	}
 
-	return m_MP3Info.audio_bytes;
+	return Samples * m_DecoderData->m_Info.channels * 2;
 }
 
 size_t clMP3DataProvider::StreamWaveData( size_t Size )
@@ -113,7 +114,7 @@ size_t clMP3DataProvider::StreamWaveData( size_t Size )
 
 	size_t BytesRead = 0;
 
-	while ( BytesRead + MP3_MAX_SAMPLES_PER_FRAME * 2 < Size )
+	while ( BytesRead + MINIMP3_MAX_SAMPLES_PER_FRAME * 2 < Size )
 	{
 		int Ret = DecodeFromFile( BytesRead );
 
@@ -139,8 +140,7 @@ size_t clMP3DataProvider::StreamWaveData( size_t Size )
 
 void clMP3DataProvider::Seek( float Seconds )
 {
-	mp3_done( (mp3_decoder_t*)m_MP3Decoder );
-	m_MP3Decoder = mp3_create();
+	mp3dec_init(&m_DecoderData->m_Decoder);
 
 	m_StreamPos = 0;
 	m_IsEndOfStream = false;
