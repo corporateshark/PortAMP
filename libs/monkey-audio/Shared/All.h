@@ -1,6 +1,8 @@
 #ifndef APE_ALL_H
 #define APE_ALL_H
 
+#include <algorithm>
+
 #include "config.h"
 #include "MACUtils.h"
 
