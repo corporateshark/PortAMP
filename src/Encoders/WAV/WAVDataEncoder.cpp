@@ -44,7 +44,7 @@ bool clWAVDataEncoder::ResetEncoder( int NumChannels, int NumSamplesPerSec, int 
 	OutValue( NumSamplesPerSec, 4 );
 	OutValue( NumSamplesPerSec * BitsPerSample * NumChannels / 8, 4 );
 	OutValue( NumChannels * sizeof( uint16_t ), 2 ); // data block size
-	OutValue( 16, 2 );	// bits per sample
+	OutValue( BitsPerSample, 2 );	// bits per sample
 
 	m_DataChunkPos = m_OutputData.size();
 
@@ -55,6 +55,7 @@ bool clWAVDataEncoder::ResetEncoder( int NumChannels, int NumSamplesPerSec, int 
 
 void clWAVDataEncoder::EncodePCMData( const void* PCMData, size_t PCMDataSizeBytes )
 {
+	OutBytes(PCMData, PCMDataSizeBytes);
 }
 
 const std::vector<uint8_t>& clWAVDataEncoder::FinalizeAndGetResult()
