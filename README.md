@@ -1,7 +1,7 @@
 PortAMP
 =======
 
-Copyright (c) Sergey Kosarevsky, 2015-2018
+Copyright (c) Sergey Kosarevsky, 2015-2019
 
 https://github.com/corporateshark/PortAMP
 
@@ -17,7 +17,7 @@ Usage:
 ------
 
 ```
-portamp <filename> [<filename2> ...] [--loop] [--wav-modplug] [--verbose]
+portamp <filename> [<filename2> ...] [--loop] [--wav-modplug] [--verbose] [--output-file <file.wav>]
 ```
 
 Features:
