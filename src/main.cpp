@@ -1,6 +1,7 @@
 #include <chrono>
 #include <thread>
 #include <cstring>
+#include <fstream>
 #include <stdio.h>
 
 #include "AudioSubsystem.h"
@@ -8,12 +9,13 @@
 #include "Decoders/iWaveDataProvider.h"
 #include "Decoders/WAV/WAVDataProvider.h"
 #include "Encoders/iWaveDataEncoder.h"
+#include "Encoders/WAV/WAVDataEncoder.h"
 #include "Utils.h"
 #include "Playlist.h"
 
 #define ENABLE_TEST	0
 
-const char* PORTAMP_VERSION = "1.1.3";
+const char* PORTAMP_VERSION = "1.2.0";
 
 sConfig g_Config;
 clPlaylist g_Playlist;
@@ -51,11 +53,11 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 void PrintBanner()
 {
 	printf( "PortAMP version %s (%s)\n", PORTAMP_VERSION, __DATE__ " " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS );
-	printf( "Copyright (C) 2015-2018 Sergey Kosarevsky\n" );
+	printf( "Copyright (C) 2015-2019 Sergey Kosarevsky\n" );
 	printf( "portamp@linderdaum.com\n" );
 	printf( "https://github.com/corporateshark/PortAMP\n" );
 	printf( "\n" );
-	printf( "portamp <filename1> [<filename2> ...] [--loop] [--wav-modplug] [--verbose]\n" );
+	printf( "portamp <filename1> [<filename2> ...] [--loop] [--wav-modplug] [--verbose] [--output-file <filename.wav>]\n" );
 	printf( "\n" );
 }
 
@@ -86,6 +88,8 @@ int main( int argc, char* argv[] )
 
 	bool RequestingExit = false;
 
+	std::shared_ptr<iWaveDataEncoder> Encoder = g_Config.m_OutputFile.empty() ? nullptr : std::make_shared<clWAVDataEncoder>();
+
 	while ( !g_Playlist.IsEmpty() && !RequestingExit )
 	{
 		auto FileName = g_Playlist.GetAndPopNextTrack( g_Config.m_Loop );
@@ -94,6 +98,28 @@ int main( int argc, char* argv[] )
 
 		auto Provider = CreateWaveDataProvider( FileName.c_str(), DataBlob );
 		if (!Provider) continue;
+
+		if (Encoder)
+		{
+			const auto Format = Provider->GetWaveDataFormat();
+			Encoder->ResetEncoder(Format.m_NumChannels, Format.m_SamplesPerSecond, Format.m_BitsPerSample, 1.0f);
+			printf("Converting %s to %s...\n", FileName.c_str(), g_Config.m_OutputFile.c_str());
+			if (Provider->IsStreaming())
+			{
+				while (Provider->StreamWaveData(65535))
+				{
+					Encoder->EncodePCMData(Provider->GetWaveData(), Provider->GetWaveDataSize());
+				}
+			}
+			else
+			{
+				Encoder->EncodePCMData(Provider->GetWaveData(), Provider->GetWaveDataSize());
+			}
+			const auto Result = Encoder->FinalizeAndGetResult();
+			std::ofstream OutFile(g_Config.m_OutputFile, std::ios::out | std::ofstream::binary);
+			std::copy(Result.begin(), Result.end(), std::ostreambuf_iterator<char>(OutFile));
+			break;
+		}
 		
 		Source->BindDataProvider( Provider );
 		Source->Play();
