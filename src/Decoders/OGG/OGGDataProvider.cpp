@@ -102,6 +102,7 @@ size_t clOGGDataProvider::StreamWaveData( size_t Size )
 		else
 		{
 			// there is no audio data in this frame, just skip it
+			break;
 		}
 	}									
 
