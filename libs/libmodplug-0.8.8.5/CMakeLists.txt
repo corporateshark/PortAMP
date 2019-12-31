@@ -9,7 +9,7 @@ if(MSVC)
 		-DMODPLUG_STATIC
 		-DMODPLUG_NO_FILESAVE
 	)
-	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
+#	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
 endif(MSVC)
 
 include_directories(

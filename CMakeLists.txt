@@ -17,7 +17,7 @@ include_directories(
 	libs/libvorbis-1.3.5/include
 	libs/libmodplug-0.8.8.5/src
 	libs/id3v2lib/include
-	libs/flac-1.3.1/include
+	libs/flac-1.3.3/include
 	libs/monkey-audio
 	libs/libopus/include
 	libs/libopusfile/include
@@ -66,13 +66,13 @@ if(MSVC)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/flac-1.3.1 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/flac-1.3.3 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
-	set(CMAKE_C_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
-	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
-	add_definitions(-D_ALLOW_RTCc_IN_STL)
+#	set(CMAKE_C_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
+#	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
+#	add_definitions(-D_ALLOW_RTCc_IN_STL)
 	target_link_libraries(portamp
 		libogg
 		libvorbis
@@ -88,7 +88,7 @@ elseif(APPLE)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/flac-1.3.1 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/flac-1.3.3 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
