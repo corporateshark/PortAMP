@@ -94,10 +94,18 @@ int main( int argc, char* argv[] )
 	{
 		auto FileName = g_Playlist.GetAndPopNextTrack( g_Config.m_Loop );
 		auto DataBlob = ReadFileAsBlob( FileName.c_str() );
-		if (!DataBlob || !DataBlob->GetDataSize()) continue;
+		if (!DataBlob || !DataBlob->GetDataSize())
+		{
+			printf("Cannot read file %s\n", FileName.c_str());
+			continue;
+		}
 
 		auto Provider = CreateWaveDataProvider( FileName.c_str(), DataBlob );
-		if (!Provider) continue;
+		if (!Provider)
+		{
+			printf("Cannot parse file %s\n", FileName.c_str());
+			continue;
+		}
 
 		if (Encoder)
 		{
