@@ -15,7 +15,7 @@
 
 #define ENABLE_TEST	0
 
-const char* PORTAMP_VERSION = "1.2.0";
+const char* PORTAMP_VERSION = "1.2.1";
 
 sConfig g_Config;
 clPlaylist g_Playlist;
@@ -53,7 +53,7 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 void PrintBanner()
 {
 	printf( "PortAMP version %s (%s)\n", PORTAMP_VERSION, __DATE__ " " __TIME__ " via " __COMPILER_VER__ " for " BUILD_OS );
-	printf( "Copyright (C) 2015-2019 Sergey Kosarevsky\n" );
+	printf( "Copyright (C) 2015-2021 Sergey Kosarevsky\n" );
 	printf( "portamp@linderdaum.com\n" );
 	printf( "https://github.com/corporateshark/PortAMP\n" );
 	printf( "\n" );
