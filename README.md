@@ -37,9 +37,7 @@ Clone:
 ------------------------
 
 ```
-git clone https://github.com/corporateshark/PortAMP
-git submodule init
-git submodule update
+git clone https://github.com/corporateshark/PortAMP --recursive
 ```
 
 UNIX build instructions:
@@ -58,7 +56,7 @@ Windows build instructions:
 ```
 mkdir build
 cd build
-cmake .. -G "Visual Studio 15 2017"
+cmake .. -G "Visual Studio 16 2019" -A x64
 start PortAMP.sln
 ```
 
