@@ -121,7 +121,14 @@ bool LoadAL()
 	{
 		FLib = LoadLibrary( "OpenAL32.dll" );
 
-		if ( FLib == INVALID_HANDLE_VALUE || !FLib ) {  printf("Unable to load OpenAL32.dll\n"); return false; }
+		if ( FLib == INVALID_HANDLE_VALUE || !FLib ) {
+			FLib = LoadLibrary("soft_oal.dll");
+
+			if (FLib == INVALID_HANDLE_VALUE || !FLib) {
+				printf("Unable to load OpenAL32.dll or soft_oal.dll\n");
+				return false;
+			}
+		}
 	}
 
 	alEnable = ( LPALENABLE )GetProcAddress( FLib, "alEnable" );
