@@ -93,7 +93,6 @@ elseif(APPLE)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
-	include(CMakeLists_Apple.txt)
 	target_link_libraries(portamp
 		libogg
 		libvorbis
@@ -107,7 +106,8 @@ elseif(APPLE)
 		pthread
 	)
 	include_directories(/usr/local/include /opt/local/include)
-	ADD_FRAMEWORK(OpenAL portamp)
+	find_package(OpenAL REQUIRED)
+	target_link_libraries(portamp "${OPENAL_LIBRARY}")
 else()
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)

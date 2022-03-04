@@ -17,6 +17,10 @@
 #  include <windows.h>
 #endif
 
+#if defined(__APPLE__)
+#	include <TargetConditionals.h>
+#endif
+
 #include "AL/al.h"
 #include "AL/alc.h"
 
