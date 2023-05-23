@@ -1,5 +1,7 @@
 ﻿#include "WAVDataEncoder.h"
 
+#include <string.h>
+
 static void PatchValue( uint8_t* Ptr, uint64_t Value, size_t Size )
 {
 	for ( ; Size; --Size, Value >>= 8 )

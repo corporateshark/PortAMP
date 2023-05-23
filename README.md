@@ -44,6 +44,7 @@ UNIX build instructions:
 ------------------------
 
 ```
+sudo apt-get install libopus-dev libopusfile-dev libflac-dev
 mkdir build
 cd build
 cmake .. -G "Unix Makefiles"

@@ -83,6 +83,14 @@ if(MSVC)
 		libopus
 		libopusfile
 	)
+	set_property(TARGET libogg PROPERTY FOLDER ThirdParty)
+	set_property(TARGET libvorbis PROPERTY FOLDER ThirdParty)
+	set_property(TARGET libmodplug PROPERTY FOLDER ThirdParty)
+	set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
+	set_property(TARGET id3v2 PROPERTY FOLDER ThirdParty)
+	set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
+	set_property(TARGET libopus PROPERTY FOLDER ThirdParty)
+	set_property(TARGET libopusfile PROPERTY FOLDER ThirdParty)
 elseif(APPLE)
 	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
@@ -109,10 +117,7 @@ elseif(APPLE)
 	find_package(OpenAL REQUIRED)
 	target_link_libraries(portamp "${OPENAL_LIBRARY}")
 else()
-	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 	set(CMAKE_CXX_FLAGS "-std=c++11")
 	target_link_libraries(portamp
 		ogg
@@ -120,7 +125,6 @@ else()
 		vorbisfile
 		modplug
 		FLAC
-		id3v2
 		monkeyaudio
 		opus
 		opusfile
@@ -130,12 +134,3 @@ else()
 	)
 	include_directories(/usr/local/include)
 endif()
-
-set_property(TARGET libogg PROPERTY FOLDER ThirdParty)
-set_property(TARGET libvorbis PROPERTY FOLDER ThirdParty)
-set_property(TARGET libmodplug PROPERTY FOLDER ThirdParty)
-set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
-set_property(TARGET id3v2 PROPERTY FOLDER ThirdParty)
-set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
-set_property(TARGET libopus PROPERTY FOLDER ThirdParty)
-set_property(TARGET libopusfile PROPERTY FOLDER ThirdParty)

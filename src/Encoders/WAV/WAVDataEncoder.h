@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include "Encoders/iWaveDataEncoder.h"
 
 class clWAVDataEncoder: public iWaveDataEncoder
