@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.19)
 PROJECT(monkeyaudio)
 
 if(MSVC)
@@ -67,5 +67,4 @@ set(HEADER_FILES
 	WAVInputSource.h
 )
 
-add_library(monkeyaudio ${SRC_FILES} ${HEADER_FILES}
-)
+add_library(monkeyaudio ${SRC_FILES} ${HEADER_FILES})
