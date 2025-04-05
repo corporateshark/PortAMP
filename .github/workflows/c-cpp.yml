@@ -1,0 +1,98 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+# https://github.com/git-lfs/git-lfs/issues/5749
+env:
+  GIT_CLONE_PROTECTION_ACTIVE: false
+
+jobs:
+  cmake-build:
+      strategy:
+        fail-fast: false
+        matrix:
+          config:
+          - {
+              name: "Windows - MSVC 2022",
+              os: windows-latest,
+              build_type: "Debug",
+              cc: "cl",
+              cxx: "cl",
+              generators: "Visual Studio 17 2022",
+            }
+          - {
+              name: "Ubuntu - Clang",
+              os: ubuntu-latest,
+              build_type: "Debug",
+              cc: "clang-15",
+              cxx: "clang++-15",
+              generators: "Unix Makefiles",
+            }
+          - {
+              name: "Ubuntu - GCC",
+              os: ubuntu-latest,
+              build_type: "Debug",
+              cc: "gcc-12",
+              cxx: "g++-12",
+              generators: "Unix Makefiles"
+            }
+      runs-on: ${{ matrix.config.os }}
+
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            submodules: recursive
+
+        - if: startsWith(matrix.config.os, 'ubuntu')
+          run: |
+            sudo apt-get install -y gcc-12 clang-15 libopus-dev libopusfile-dev libflac-dev
+
+        - name: Get the number of CPU cores
+          uses: SimenB/github-actions-cpu-cores@v2
+
+        - name: Build
+          shell: bash
+          env:
+            CC:  ${{ matrix.config.cc }}
+            CXX: ${{ matrix.config.cxx }}
+          run: |
+            cmake ${{ env.CMAKE_GENERATOR }} -S "${{ github.workspace }}" -B build ${{ matrix.config.cmake_args }}
+            cd build
+            cmake --build . --parallel ${{ steps.cpu-cores.outputs.count }}
+  
+  cmake-build-macos:
+      strategy:
+        fail-fast: false
+        matrix:
+          config:
+          - {
+              name: "macOS - Clang (Xcode)",
+              os: macos-latest,
+              build_type: "Debug",
+              cc: "clang",
+              cxx: "clang++",
+              generators: "Xcode",
+            }
+      runs-on: ${{ matrix.config.os }}
+
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            submodules: recursive
+
+        - name: Get the number of CPU cores
+          uses: SimenB/github-actions-cpu-cores@v2
+
+        - name: Build
+          shell: bash
+          env:
+            CC:  ${{ matrix.config.cc }}
+            CXX: ${{ matrix.config.cxx }}
+          run: |
+            cmake ${{ env.CMAKE_GENERATOR }} -S "${{ github.workspace }}" -B build ${{ matrix.config.cmake_args }}
+            cd build
+            cmake --build . --parallel ${{ steps.cpu-cores.outputs.count }}
