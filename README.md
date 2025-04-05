@@ -1,4 +1,4 @@
-PortAMP
+PortAMP [![Build Status](https://github.com/corporateshark/PortAMP/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/corporateshark/PortAMP/actions)
 =======
 
 Copyright (c) Sergey Kosarevsky, 2015-2025

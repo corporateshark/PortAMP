@@ -49,7 +49,7 @@ jobs:
 
         - if: startsWith(matrix.config.os, 'ubuntu')
           run: |
-            sudo apt-get install -y gcc-12 clang-15 libopus-dev libopusfile-dev libflac-dev
+            sudo apt-get install -y gcc-12 clang-15 libopus-dev libopusfile-dev libflac-dev libopenal-dev libvorbis-dev libmodplug-dev
 
         - name: Get the number of CPU cores
           uses: SimenB/github-actions-cpu-cores@v2
