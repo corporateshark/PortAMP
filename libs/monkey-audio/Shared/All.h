@@ -3,6 +3,9 @@
 
 #include <algorithm>
 
+using std::min;
+using std::max;
+
 #include "config.h"
 #include "MACUtils.h"
 

@@ -113,7 +113,7 @@ int CBitArray::OutputBitArray(BOOL bFinalize)
         m_nCurrentBitIndex = (m_nCurrentBitIndex & 31);
         
         // zero the rest of the memory (may not need the +1 because of frame byte alignment)
-        memset(&m_pBitArray[1], 0, min(nBytesToWrite + 1, BIT_ARRAY_BYTES - 1));
+        memset(&m_pBitArray[1], 0, min((int)nBytesToWrite + 1, BIT_ARRAY_BYTES - 1));
     }
     
     // return a success

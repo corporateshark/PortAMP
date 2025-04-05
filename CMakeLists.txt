@@ -6,6 +6,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_definitions(
 	-DMODPLUG_STATIC
 	-DFLAC__NO_DLL
+	-DNOMINMAX
 )
 
 include_directories(

@@ -35,8 +35,8 @@ CAPEDecompress::CAPEDecompress(int * pErrorCode, CAPEInfo * pAPEInfo, int nStart
     m_bErrorDecodingCurrentFrame = FALSE;
 
     // set the "real" start and finish blocks
-    m_nStartBlock = (nStartBlock < 0) ? 0 : min(nStartBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
-    m_nFinishBlock = (nFinishBlock < 0) ? GetInfo(APE_INFO_TOTAL_BLOCKS) : min(nFinishBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
+    m_nStartBlock = (nStartBlock < 0) ? 0 : min((intptr_t)nStartBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
+    m_nFinishBlock = (nFinishBlock < 0) ? GetInfo(APE_INFO_TOTAL_BLOCKS) : min((intptr_t)nFinishBlock, GetInfo(APE_INFO_TOTAL_BLOCKS));
     m_bIsRanged = (m_nStartBlock != 0) || (m_nFinishBlock != GetInfo(APE_INFO_TOTAL_BLOCKS));
 }
 

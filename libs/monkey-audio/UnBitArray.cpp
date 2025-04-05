@@ -110,7 +110,7 @@ int CUnBitArray::DecodeValueRange(UNBIT_ARRAY_STATE & BitArrayState)
     if (m_nVersion >= 3990)
     {
         // figure the pivot value
-        int nPivotValue = max(BitArrayState.nKSum / 32, 1);
+        int nPivotValue = max(BitArrayState.nKSum / 32, 1u);
         
         // get the overflow
         int nOverflow = 0;
