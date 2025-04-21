@@ -65,11 +65,21 @@ add_executable(portamp
 set_property(TARGET portamp PROPERTY CXX_STANDARD 14)
 set_property(TARGET portamp PROPERTY CXX_STANDARD_REQUIRED ON)
 
+# patch OpusFile
+set(__opus_version INCLUDED)
+set(__opusfile_version INCLUDED)
+function(get_package_version PACKAGE_VERSION PROJECT_VERSION)
+  set(PACKAGE_VERSION ${OPUSFILE_PACKAGE_VERSION} PARENT_SCOPE)
+  set(PROJECT_VERSION ${OPUSFILE_PROJECT_VERSION} PARENT_SCOPE)
+endfunction()
+set(OPUS_PACKAGE_VERSION "1.5.2" CACHE STRING "")
+set(OPUSFILE_PACKAGE_VERSION "0.12" CACHE STRING "")
+set(OPUSFILE_PROJECT_VERSION "0.12" CACHE STRING "")
 set(OP_DISABLE_HTTP     ON CACHE BOOL "")
 set(OP_DISABLE_EXAMPLES ON CACHE BOOL "")
 set(OP_DISABLE_DOCS     ON CACHE BOOL "")
 
-if(MSVC)
+if(MSVC OR APPLE)
 	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
@@ -96,30 +106,15 @@ if(MSVC)
 	set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
 	set_property(TARGET opus PROPERTY FOLDER ThirdParty)
 	set_property(TARGET opusfile PROPERTY FOLDER ThirdParty)
-elseif(APPLE)
-	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/flac-1.3.3 EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
-	target_link_libraries(portamp
-		libogg
-		libvorbis
-		libmodplug
-		libflac
-		id3v2
-		monkeyaudio
-		libopus
-		libopusfile
-		dl
-		pthread
-	)
-	include_directories(/usr/local/include /opt/local/include)
-	find_package(OpenAL REQUIRED)
-	target_link_libraries(portamp "${OPENAL_LIBRARY}")
+   if(APPLE)
+      include_directories(/usr/local/include /opt/local/include)
+      find_package(OpenAL REQUIRED)
+      target_link_libraries(portamp
+         dl
+         pthread
+         "${OPENAL_LIBRARY}"
+      )
+   endif()
 else()
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 	target_link_libraries(portamp
