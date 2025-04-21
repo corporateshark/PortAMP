@@ -65,6 +65,10 @@ add_executable(portamp
 set_property(TARGET portamp PROPERTY CXX_STANDARD 14)
 set_property(TARGET portamp PROPERTY CXX_STANDARD_REQUIRED ON)
 
+set(OP_DISABLE_HTTP     ON CACHE BOOL "")
+set(OP_DISABLE_EXAMPLES ON CACHE BOOL "")
+set(OP_DISABLE_DOCS     ON CACHE BOOL "")
+
 if(MSVC)
 	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
@@ -75,23 +79,23 @@ if(MSVC)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 	target_link_libraries(portamp
-		libogg
+		Ogg::ogg
 		libvorbis
 		libmodplug
 		id3v2
 		libflac
 		monkeyaudio
-		libopus
-		libopusfile
+		Opus::opus
+		OpusFile::opusfile
 	)
-	set_property(TARGET libogg PROPERTY FOLDER ThirdParty)
+	set_property(TARGET ogg PROPERTY FOLDER ThirdParty)
 	set_property(TARGET libvorbis PROPERTY FOLDER ThirdParty)
 	set_property(TARGET libmodplug PROPERTY FOLDER ThirdParty)
 	set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
 	set_property(TARGET id3v2 PROPERTY FOLDER ThirdParty)
 	set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
-	set_property(TARGET libopus PROPERTY FOLDER ThirdParty)
-	set_property(TARGET libopusfile PROPERTY FOLDER ThirdParty)
+	set_property(TARGET opus PROPERTY FOLDER ThirdParty)
+	set_property(TARGET opusfile PROPERTY FOLDER ThirdParty)
 elseif(APPLE)
 	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
