@@ -2,7 +2,7 @@
 
 SUBDIRS = modes books
 
-INCLUDES = -I$(top_srcdir)/include @OGG_CFLAGS@
+AM_CPPFLAGS = -I$(top_srcdir)/include @OGG_CFLAGS@
 
 lib_LTLIBRARIES = libvorbis.la libvorbisfile.la libvorbisenc.la
 
@@ -35,7 +35,7 @@ psytune_SOURCES = psytune.c
 psytune_LDFLAGS = -static
 psytune_LDADD = libvorbis.la
 
-EXTRA_DIST = lookups.pl 
+EXTRA_DIST = lookups.pl CMakeLists.txt
 
 # build and run the self tests on 'make check'
 

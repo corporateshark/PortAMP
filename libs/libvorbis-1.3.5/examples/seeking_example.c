@@ -6,12 +6,11 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2007             *
- * by the Xiph.Org Foundation http://www.xiph.org/                  *
+ * by the Xiph.Org Foundation https://xiph.org/                     *
  *                                                                  *
  ********************************************************************
 
  function: illustrate seeking, and test it too
- last mod: $Id: seeking_example.c 19164 2014-06-18 06:33:58Z xiphmont $
 
  ********************************************************************/
 
@@ -214,7 +213,7 @@ int main(){
     {
       fprintf(stderr,"testing time page seeking to random places in %f seconds....\n",
              timelength);
-    
+
       for(i=0;i<1000;i++){
         double val=(double)rand()/RAND_MAX*timelength;
         fprintf(stderr,"\r\t%d [time position %f]...     ",i,val);
@@ -233,7 +232,7 @@ int main(){
     {
       fprintf(stderr,"testing time exact seeking to random places in %f seconds....\n",
              timelength);
-    
+
       for(i=0;i<1000;i++){
         double val=(double)rand()/RAND_MAX*timelength;
         fprintf(stderr,"\r\t%d [time position %f]...     ",i,val);
@@ -252,7 +251,7 @@ int main(){
 
       }
     }
-    
+
     fprintf(stderr,"\r                                           \nOK.\n\n");
 
 
