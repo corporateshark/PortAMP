@@ -13,3 +13,6 @@
 [submodule "libs/libmodplug"]
 	path = libs/libmodplug
 	url = https://github.com/Konstanty/libmodplug
+[submodule "libs/libvorbis"]
+	path = libs/libvorbis
+	url = https://gitlab.xiph.org/xiph/vorbis

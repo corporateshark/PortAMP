@@ -15,13 +15,10 @@ include_directories(
 	src/OpenAL
 	libs
 	libs/libogg/include
-	libs/libvorbis-1.3.5/include
 	libs/libmodplug/src
 	libs/id3v2lib/include
 	libs/flac-1.3.3/include
 	libs/monkey-audio
-	libs/libopus/include
-	libs/libopusfile/include
 )
 
 set(SRC_FILES
@@ -83,7 +80,7 @@ add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 
 if(MSVC OR APPLE)
 	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libvorbis EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/flac-1.3.3 EXCLUDE_FROM_ALL)
@@ -91,7 +88,8 @@ if(MSVC OR APPLE)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 	target_link_libraries(portamp
 		Ogg::ogg
-		libvorbis
+		vorbis
+		vorbisfile
 		modplug
 		id3v2
 		libflac
@@ -99,14 +97,6 @@ if(MSVC OR APPLE)
 		Opus::opus
 		OpusFile::opusfile
 	)
-	set_property(TARGET ogg PROPERTY FOLDER ThirdParty)
-	set_property(TARGET libvorbis PROPERTY FOLDER ThirdParty)
-	set_property(TARGET modplug PROPERTY FOLDER ThirdParty)
-	set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
-	set_property(TARGET id3v2 PROPERTY FOLDER ThirdParty)
-	set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
-	set_property(TARGET opus PROPERTY FOLDER ThirdParty)
-	set_property(TARGET opusfile PROPERTY FOLDER ThirdParty)
    if(APPLE)
       include_directories(/usr/local/include)
       find_package(OpenAL REQUIRED)
@@ -131,4 +121,16 @@ else()
 		openal
 	)
 	include_directories(/usr/local/include)
+endif()
+
+if(MSVC)
+	set_property(TARGET ogg PROPERTY FOLDER ThirdParty)
+	set_property(TARGET vorbis PROPERTY FOLDER ThirdParty)
+	set_property(TARGET vorbisfile PROPERTY FOLDER ThirdParty)
+	set_property(TARGET modplug PROPERTY FOLDER ThirdParty)
+	set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
+	set_property(TARGET id3v2 PROPERTY FOLDER ThirdParty)
+	set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
+	set_property(TARGET opus PROPERTY FOLDER ThirdParty)
+	set_property(TARGET opusfile PROPERTY FOLDER ThirdParty)
 endif()
