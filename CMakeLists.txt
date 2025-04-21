@@ -79,13 +79,14 @@ set(OP_DISABLE_HTTP     ON CACHE BOOL "")
 set(OP_DISABLE_EXAMPLES ON CACHE BOOL "")
 set(OP_DISABLE_DOCS     ON CACHE BOOL "")
 
+add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
+
 if(MSVC OR APPLE)
 	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/flac-1.3.3 EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 	target_link_libraries(portamp
@@ -107,7 +108,7 @@ if(MSVC OR APPLE)
 	set_property(TARGET opus PROPERTY FOLDER ThirdParty)
 	set_property(TARGET opusfile PROPERTY FOLDER ThirdParty)
    if(APPLE)
-      include_directories(/usr/local/include /opt/local/include)
+      include_directories(/usr/local/include)
       find_package(OpenAL REQUIRED)
       target_link_libraries(portamp
          dl
@@ -116,7 +117,6 @@ if(MSVC OR APPLE)
       )
    endif()
 else()
-	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 	target_link_libraries(portamp
 		ogg
 		vorbis
