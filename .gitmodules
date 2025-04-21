@@ -10,3 +10,6 @@
 [submodule "libs/libopus"]
 	path = libs/libopus
 	url = https://github.com/xiph/opus
+[submodule "libs/libmodplug"]
+	path = libs/libmodplug
+	url = https://github.com/Konstanty/libmodplug

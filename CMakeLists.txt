@@ -16,7 +16,7 @@ include_directories(
 	libs
 	libs/libogg/include
 	libs/libvorbis-1.3.5/include
-	libs/libmodplug-0.8.8.5/src
+	libs/libmodplug/src
 	libs/id3v2lib/include
 	libs/flac-1.3.3/include
 	libs/monkey-audio
@@ -82,7 +82,7 @@ set(OP_DISABLE_DOCS     ON CACHE BOOL "")
 if(MSVC OR APPLE)
 	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/flac-1.3.3 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
@@ -91,7 +91,7 @@ if(MSVC OR APPLE)
 	target_link_libraries(portamp
 		Ogg::ogg
 		libvorbis
-		libmodplug
+		modplug
 		id3v2
 		libflac
 		monkeyaudio
@@ -100,7 +100,7 @@ if(MSVC OR APPLE)
 	)
 	set_property(TARGET ogg PROPERTY FOLDER ThirdParty)
 	set_property(TARGET libvorbis PROPERTY FOLDER ThirdParty)
-	set_property(TARGET libmodplug PROPERTY FOLDER ThirdParty)
+	set_property(TARGET modplug PROPERTY FOLDER ThirdParty)
 	set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
 	set_property(TARGET id3v2 PROPERTY FOLDER ThirdParty)
 	set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
