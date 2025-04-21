@@ -4,3 +4,6 @@
 [submodule "libs/libopusfile"]
 	path = libs/libopusfile
 	url = https://github.com/xiph/opusfile
+[submodule "libs/libogg"]
+	path = libs/libogg
+	url = https://github.com/xiph/ogg

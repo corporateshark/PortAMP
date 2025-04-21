@@ -14,7 +14,7 @@ include_directories(
 	src
 	src/OpenAL
 	libs
-	libs/libogg-1.3.2/include
+	libs/libogg/include
 	libs/libvorbis-1.3.5/include
 	libs/libmodplug-0.8.8.5/src
 	libs/id3v2lib/include
@@ -66,7 +66,7 @@ set_property(TARGET portamp PROPERTY CXX_STANDARD 14)
 set_property(TARGET portamp PROPERTY CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
-	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
@@ -93,7 +93,7 @@ if(MSVC)
 	set_property(TARGET libopus PROPERTY FOLDER ThirdParty)
 	set_property(TARGET libopusfile PROPERTY FOLDER ThirdParty)
 elseif(APPLE)
-	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug-0.8.8.5 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
