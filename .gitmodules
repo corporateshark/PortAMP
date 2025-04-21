@@ -16,3 +16,6 @@
 [submodule "libs/libvorbis"]
 	path = libs/libvorbis
 	url = https://gitlab.xiph.org/xiph/vorbis
+[submodule "libs/flac"]
+	path = libs/flac
+	url = https://github.com/xiph/flac

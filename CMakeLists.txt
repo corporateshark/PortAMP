@@ -16,7 +16,7 @@ include_directories(
 	libs
 	libs/libogg/include
 	libs/libmodplug/src
-	libs/flac-1.3.3/include
+	libs/flac/include
 	libs/monkey-audio
    libs/libopus/include
    libs/libopusfile/include
@@ -76,27 +76,46 @@ set(OPUSFILE_PROJECT_VERSION "0.12" CACHE STRING "")
 set(OP_DISABLE_HTTP     ON CACHE BOOL "")
 set(OP_DISABLE_EXAMPLES ON CACHE BOOL "")
 set(OP_DISABLE_DOCS     ON CACHE BOOL "")
+set(OPUS_INSTALL_PKG_CONFIG_MODULE OFF CACHE BOOL "")
+
+# Flac
+set(BUILD_CXXLIBS             OFF CACHE BOOL "")
+set(BUILD_PROGRAMS            OFF CACHE BOOL "")
+set(BUILD_EXAMPLES            OFF CACHE BOOL "")
+set(BUILD_TESTING             OFF CACHE BOOL "")
+set(BUILD_DOCS                OFF CACHE BOOL "")
+set(INSTALL_MANPAGES          OFF CACHE BOOL "")
+set(INSTALL_PKGCONFIG_MODULES OFF CACHE BOOL "")
+set(WITH_OGG                  ON CACHE BOOL "")
 
 add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 
 if(MSVC OR APPLE)
 	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis EXCLUDE_FROM_ALL)
+	add_subdirectory(libs/flac EXCLUDE_FROM_ALL) # Flac adds ligogg
 	add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/flac-1.3.3 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
+	target_compile_definitions(FLAC PRIVATE "PACKAGE_VERSION=\"1.5.0\"")
+	target_compile_definitions(FLAC PRIVATE "FLAC__HAS_OGG=1")
 	target_link_libraries(portamp
 		Ogg::ogg
 		vorbis
 		vorbisfile
 		modplug
-		libflac
+		FLAC
 		monkeyaudio
 		Opus::opus
 		OpusFile::opusfile
 	)
    if(APPLE)
+      target_compile_definitions(FLAC PRIVATE "HAVE_LROUND=1")
+      target_compile_definitions(FLAC PRIVATE "HAVE_FSEEKO=1")
+      target_compile_options(FLAC PRIVATE -Wno-undef)
+      target_compile_options(modplug PRIVATE -Wno-deprecated-declarations)
+      target_compile_options(monkeyaudio PRIVATE -Wno-deprecated-declarations)
+      target_compile_options(opus PRIVATE -Wno-unused-but-set-variable)
       include_directories(/usr/local/include)
       find_package(OpenAL REQUIRED)
       target_link_libraries(portamp
@@ -127,7 +146,7 @@ if(MSVC)
 	set_property(TARGET vorbis PROPERTY FOLDER ThirdParty)
 	set_property(TARGET vorbisfile PROPERTY FOLDER ThirdParty)
 	set_property(TARGET modplug PROPERTY FOLDER ThirdParty)
-	set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
+	set_property(TARGET FLAC PROPERTY FOLDER ThirdParty)
 	set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
 	set_property(TARGET opus PROPERTY FOLDER ThirdParty)
 	set_property(TARGET opusfile PROPERTY FOLDER ThirdParty)

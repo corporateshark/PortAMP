@@ -130,7 +130,7 @@ void clFLACDataProvider::flacError(
 {
 	const char* S = "Unknown error";
 
-	switch ( Status )
+	switch (Status)
 	{
 	case FLAC__STREAM_DECODER_ERROR_STATUS_LOST_SYNC:
 		S = "An error in the stream caused the decoder to lose synchronization.";
@@ -143,6 +143,15 @@ void clFLACDataProvider::flacError(
 		break;
 	case FLAC__STREAM_DECODER_ERROR_STATUS_UNPARSEABLE_STREAM:
 		S = "The decoder encountered reserved fields in use in the stream.";
+		break;
+	case FLAC__STREAM_DECODER_ERROR_STATUS_BAD_METADATA:
+		S = "The decoder encountered a corrupted metadata block.";
+		break;
+	case FLAC__STREAM_DECODER_ERROR_STATUS_OUT_OF_BOUNDS:
+		S = "The decoder encountered a otherwise valid frame in which the decoded samples exceeded the range offered by the stated bit depth.";
+		break;
+	case FLAC__STREAM_DECODER_ERROR_STATUS_MISSING_FRAME:
+		S = "Two adjacent frames had frame numbers increasing by more than 1 or sample numbers increasing by more than the blocksize.";
 		break;
 	}
 
