@@ -62,6 +62,9 @@ add_executable(portamp
 	${HEADER_FILES}
 )
 
+set_property(TARGET portamp PROPERTY CXX_STANDARD 14)
+set_property(TARGET portamp PROPERTY CXX_STANDARD_REQUIRED ON)
+
 if(MSVC)
 	add_subdirectory(libs/libogg-1.3.2 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis-1.3.5 EXCLUDE_FROM_ALL)
@@ -71,9 +74,6 @@ if(MSVC)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
-#	set(CMAKE_C_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
-#	set(CMAKE_CXX_FLAGS "/EHsc /RTCc /RTC1 /MTd /Zp16 /GS /Qpar /MP /wd4244")
-#	add_definitions(-D_ALLOW_RTCc_IN_STL)
 	target_link_libraries(portamp
 		libogg
 		libvorbis
@@ -101,7 +101,6 @@ elseif(APPLE)
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
-	set(CMAKE_CXX_FLAGS "-std=c++11")
 	target_link_libraries(portamp
 		libogg
 		libvorbis
@@ -119,7 +118,6 @@ elseif(APPLE)
 	target_link_libraries(portamp "${OPENAL_LIBRARY}")
 else()
 	add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
-	set(CMAKE_CXX_FLAGS "-std=c++11")
 	target_link_libraries(portamp
 		ogg
 		vorbis
