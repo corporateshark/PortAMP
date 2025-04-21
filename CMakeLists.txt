@@ -16,9 +16,10 @@ include_directories(
 	libs
 	libs/libogg/include
 	libs/libmodplug/src
-	libs/id3v2lib/include
 	libs/flac-1.3.3/include
 	libs/monkey-audio
+   libs/libopus/include
+   libs/libopusfile/include
 )
 
 set(SRC_FILES
@@ -82,7 +83,6 @@ if(MSVC OR APPLE)
 	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libvorbis EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/id3v2lib EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/flac-1.3.3 EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
@@ -91,7 +91,6 @@ if(MSVC OR APPLE)
 		vorbis
 		vorbisfile
 		modplug
-		id3v2
 		libflac
 		monkeyaudio
 		Opus::opus
@@ -129,7 +128,6 @@ if(MSVC)
 	set_property(TARGET vorbisfile PROPERTY FOLDER ThirdParty)
 	set_property(TARGET modplug PROPERTY FOLDER ThirdParty)
 	set_property(TARGET libflac PROPERTY FOLDER ThirdParty)
-	set_property(TARGET id3v2 PROPERTY FOLDER ThirdParty)
 	set_property(TARGET monkeyaudio PROPERTY FOLDER ThirdParty)
 	set_property(TARGET opus PROPERTY FOLDER ThirdParty)
 	set_property(TARGET opusfile PROPERTY FOLDER ThirdParty)
