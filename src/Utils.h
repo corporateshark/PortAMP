@@ -63,16 +63,10 @@ private:
 
 struct sConfig
 {
-	sConfig()
-	: m_Loop( false )
-	, m_UseModPlugToDecodeWAV( false )
-	, m_Verbose( false )
-	, m_OutputFile()
-	{}
-
-	bool m_Loop;
-	bool m_UseModPlugToDecodeWAV;
-	bool m_Verbose;
+	bool m_Loop = false;
+	bool m_UseModPlugToDecodeWAV = false;
+	bool m_Verbose = false;
+	float m_Gain = 1.0f;
 	std::string m_OutputFile;
 };
 

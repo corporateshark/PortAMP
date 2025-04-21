@@ -9,7 +9,7 @@ portamp@linderdaum.com
 
 =============================
 
-Portable command-line music player for Windows, OS X and Linux
+Portable command-line music player for Windows, macOS, and Linux
 
 =============================
 
@@ -17,7 +17,7 @@ Usage:
 ------
 
 ```
-portamp <filename> [<filename2> ...] [--loop] [--wav-modplug] [--verbose] [--output-file <file.wav>]
+portamp <filename> [<filename2> ...] [--loop] [--wav-modplug] [--verbose] [--gain <float>] [--output-file <file.wav>]
 ```
 
 Features:

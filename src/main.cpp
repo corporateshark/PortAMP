@@ -31,6 +31,18 @@ sConfig ReadConfigFromCommandLine( int argc, char* argv[] )
 		if ( strstr( argv[i], "--loop" ) == argv[i] ) Cfg.m_Loop = true;
 		else if ( strstr( argv[i], "--wav-modplug" ) == argv[i] ) Cfg.m_UseModPlugToDecodeWAV = true;
 		else if ( strstr( argv[i], "--verbose" ) == argv[i] ) Cfg.m_Verbose = true;
+		else if (strstr(argv[i], "--gain") == argv[i])
+		{
+			if (i + 1 < argc)
+			{
+				Cfg.m_Gain = strtof(argv[++i], nullptr);
+			}
+			else
+			{
+				printf("Expected gain level [float] for --volume\n");
+				exit(0);
+			}
+		}
 		else if ( strstr (argv[i], "--output-file" ) == argv[i] )
 		{
 			if ( i+1 < argc )
@@ -57,7 +69,7 @@ void PrintBanner()
 	printf( "portamp@linderdaum.com\n" );
 	printf( "https://github.com/corporateshark/PortAMP\n" );
 	printf( "\n" );
-	printf( "portamp <filename1> [<filename2> ...] [--loop] [--wav-modplug] [--verbose] [--output-file <filename.wav>]\n" );
+	printf( "portamp <filename1> [<filename2> ...] [--loop] [--wav-modplug] [--verbose] [--gain <float>] [--output-file <filename.wav>]\n" );
 	printf( "\n" );
 }
 
@@ -78,11 +90,16 @@ int main( int argc, char* argv[] )
 	g_Config.m_Verbose = true;
 #endif
 
-	auto AudioSubsystem = CreateAudioSubsystem_OpenAL();
+	std::shared_ptr<iAudioSubsystem> AudioSubsystem = CreateAudioSubsystem_OpenAL();
 
 	AudioSubsystem->Start();
 
-	auto Source = AudioSubsystem->CreateAudioSource();
+	if (g_Config.m_Gain > 0) {
+		AudioSubsystem->SetListenerGain(g_Config.m_Gain);
+	}
+
+	std::shared_ptr<iAudioSource> Source = AudioSubsystem->CreateAudioSource();
+
 	// allow seamless looping if there is only one track
 	if ( g_Playlist.GetNumTracks() == 1 ) Source->SetLooping( g_Config.m_Loop );
 
