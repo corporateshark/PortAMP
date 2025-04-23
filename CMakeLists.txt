@@ -91,12 +91,8 @@ add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
 add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 
-if(MSVC OR APPLE)
-	target_compile_definitions(FLAC PRIVATE "PACKAGE_VERSION=\"1.5.0\"")
-	target_compile_definitions(FLAC PRIVATE "FLAC__HAS_OGG=1")
-	target_compile_definitions(FLAC PRIVATE "HAVE_LROUND=1")
+if(MSVC)
 	target_compile_definitions(FLAC PRIVATE "HAVE_FSEEKO=1")
-	target_compile_definitions(FLAC PRIVATE "HAVE_STDINT_H=1")
 endif()
 
 if(UNIX)
@@ -105,7 +101,9 @@ if(UNIX)
 	target_compile_options(modplug PRIVATE -Wno-deprecated-declarations -Wno-unused-result -Wno-address)
 	target_compile_options(monkeyaudio PRIVATE -Wno-deprecated-declarations)
 	target_compile_options(opus PRIVATE -Wno-unused-but-set-variable)
-	target_compile_options(opusfile PRIVATE -Wno-maybe-uninitialized)
+	if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		target_compile_options(opusfile PRIVATE -Wno-maybe-uninitialized)
+	endif()
 	target_link_libraries(portamp
 		dl
 		pthread
