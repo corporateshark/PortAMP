@@ -44,7 +44,7 @@ UNIX build instructions:
 ------------------------
 
 ```
-sudo apt-get install libopus-dev libopusfile-dev libflac-dev libopenal-dev libvorbis-dev libmodplug-dev
+sudo apt-get install libopenal-dev
 mkdir build
 cd build
 cmake .. -G "Unix Makefiles"

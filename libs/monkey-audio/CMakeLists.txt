@@ -8,12 +8,6 @@ else()
 	ADD_DEFINITIONS(-O2)
 endif()
 
-include_directories(
-	.
-	Assembly
-	Shared
-)
-
 set(SRC_FILES
 	APECompress.cpp
 	APECompressCore.cpp
@@ -68,3 +62,6 @@ set(HEADER_FILES
 )
 
 add_library(monkeyaudio ${SRC_FILES} ${HEADER_FILES})
+
+target_include_directories(monkeyaudio PUBLIC .)
+target_include_directories(monkeyaudio PRIVATE Assembly Shared)

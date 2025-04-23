@@ -14,12 +14,7 @@ include_directories(
 	src
 	src/OpenAL
 	libs
-	libs/libogg/include
 	libs/libmodplug/src
-	libs/flac/include
-	libs/monkey-audio
-   libs/libopus/include
-   libs/libopusfile/include
 )
 
 set(SRC_FILES
@@ -89,57 +84,45 @@ set(INSTALL_PKGCONFIG_MODULES OFF CACHE BOOL "")
 set(WITH_OGG                  ON CACHE BOOL "")
 
 add_subdirectory(libs/monkey-audio EXCLUDE_FROM_ALL)
+add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
+add_subdirectory(libs/libvorbis EXCLUDE_FROM_ALL)
+add_subdirectory(libs/flac EXCLUDE_FROM_ALL) # Flac adds ligogg
+add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
+add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
+add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 
 if(MSVC OR APPLE)
-	add_subdirectory(libs/libogg EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libvorbis EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/flac EXCLUDE_FROM_ALL) # Flac adds ligogg
-	add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
-	add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
 	target_compile_definitions(FLAC PRIVATE "PACKAGE_VERSION=\"1.5.0\"")
 	target_compile_definitions(FLAC PRIVATE "FLAC__HAS_OGG=1")
-	target_link_libraries(portamp
-		Ogg::ogg
-		vorbis
-		vorbisfile
-		modplug
-		FLAC
-		monkeyaudio
-		Opus::opus
-		OpusFile::opusfile
-	)
-   if(APPLE)
-      target_compile_definitions(FLAC PRIVATE "HAVE_LROUND=1")
-      target_compile_definitions(FLAC PRIVATE "HAVE_FSEEKO=1")
-      target_compile_options(FLAC PRIVATE -Wno-undef)
-      target_compile_options(modplug PRIVATE -Wno-deprecated-declarations)
-      target_compile_options(monkeyaudio PRIVATE -Wno-deprecated-declarations)
-      target_compile_options(opus PRIVATE -Wno-unused-but-set-variable)
-      include_directories(/usr/local/include)
-      find_package(OpenAL REQUIRED)
-      target_link_libraries(portamp
-         dl
-         pthread
-         "${OPENAL_LIBRARY}"
-      )
-   endif()
-else()
-	target_link_libraries(portamp
-		ogg
-		vorbis
-		vorbisfile
-		modplug
-		FLAC
-		monkeyaudio
-		opus
-		opusfile
-		pthread
-		dl
-		openal
-	)
-	include_directories(/usr/local/include)
+	target_compile_definitions(FLAC PRIVATE "HAVE_LROUND=1")
+	target_compile_definitions(FLAC PRIVATE "HAVE_FSEEKO=1")
+	target_compile_definitions(FLAC PRIVATE "HAVE_STDINT_H=1")
 endif()
+
+if(UNIX)
+	find_package(OpenAL REQUIRED)
+	target_compile_options(FLAC PRIVATE -Wno-undef)
+	target_compile_options(modplug PRIVATE -Wno-deprecated-declarations -Wno-unused-result -Wno-address)
+	target_compile_options(monkeyaudio PRIVATE -Wno-deprecated-declarations)
+	target_compile_options(opus PRIVATE -Wno-unused-but-set-variable)
+	target_compile_options(opusfile PRIVATE -Wno-maybe-uninitialized)
+	target_link_libraries(portamp
+		dl
+		pthread
+		"${OPENAL_LIBRARY}"
+	)
+endif()
+
+target_link_libraries(portamp
+	Ogg::ogg
+	vorbis
+	vorbisfile
+	modplug
+	FLAC
+	monkeyaudio
+	Opus::opus
+	OpusFile::opusfile
+)
 
 if(MSVC)
 	set_property(TARGET ogg PROPERTY FOLDER ThirdParty)
