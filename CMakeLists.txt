@@ -10,7 +10,6 @@ add_definitions(
 )
 
 include_directories(
-	.
 	src
 	src/OpenAL
 	libs
@@ -90,10 +89,6 @@ add_subdirectory(libs/flac EXCLUDE_FROM_ALL) # Flac adds ligogg
 add_subdirectory(libs/libmodplug EXCLUDE_FROM_ALL)
 add_subdirectory(libs/libopus EXCLUDE_FROM_ALL)
 add_subdirectory(libs/libopusfile EXCLUDE_FROM_ALL)
-
-if(MSVC)
-	target_compile_definitions(FLAC PRIVATE "HAVE_FSEEKO=1")
-endif()
 
 if(UNIX)
 	find_package(OpenAL REQUIRED)
